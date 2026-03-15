@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARDIGITAL AGENCE — The Brand World</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ══════════════════════════════════════════
+   TOKENS — MODE SOMBRE (défaut)
+══════════════════════════════════════════ */
+:root {
+  --navy:      #0A2463;
+  --navy-glow: rgba(10,36,99,.6);
+  --blue:      #3E92CC;
+  --blue-lt:   #62aadb;
+  --blue-dim:  rgba(62,146,204,.12);
+  --blue-line: rgba(62,146,204,.2);
+  --bg-0: rgba(13,17,36,0.7);
+  --bg-1: rgba(14,20,44,0.6);
+  --bg-2: rgba(18,24,50,0.75);
+  --bg-3: rgba(24,30,60,0.9);
+  --white:  #f0f4ff;
+  --white2: #d0dcf4;
+  --grey:   #8fa3c8;
+  --grey2:  #b8cae0;
+  --r: 6px;
+}
+
+/* ══════════════════════════════════════════
+   MODE CLAIR — harmonie complète
+   Fond : blanc pur + sections alternées
+   Cards : navy #0A2463 avec ombre portée
+   Textes : navy sur fond clair, blanc sur cards
+   Accents : cyan #3E92CC
+══════════════════════════════════════════ */
+
+body.light {
+  background: #f7faff !important;
+  background-attachment: fixed !important;
+  color: #0A2463;
+}
+
+/* ── Nav ── */
+body.light #nav                 { border-bottom-color: rgba(10,36,99,.1); }
+body.light #nav.scrolled        { background: #0A2463 !important; border-bottom-color: rgba(62,146,204,.4); }
+
+/* ── Hero inchangé ── */
+body.light #hero {
+  background:
+    linear-gradient(170deg, rgba(10,36,99,.82) 0%, rgba(11,16,36,.97) 55%, rgba(9,14,28,.99) 100%),
+    url('Fr/4.jpg') no-repeat center/cover !important;
+}
+
+/* ── Sections alternées : blanc / bleu très pâle ── */
+body.light #about      { background: #ffffff; }
+body.light #services   { background: #eef4ff; }
+body.light #formations { background: #ffffff; }
+body.light #why        { background: #eef4ff; }
+body.light #portfolio  { background: #ffffff; }
+body.light #contact    { background: #eef4ff; }
+
+/* ── Titres & chips ── */
+body.light .display            { color: #0A2463 !important; }
+body.light .section-head p     { color: #4a6690 !important; }
+body.light .chip               { background: rgba(10,36,99,.08) !important; color: #0A2463 !important; border-color: rgba(10,36,99,.2) !important; }
+
+/* ══ À PROPOS ══ */
+body.light .about-header h2    { color: #0A2463 !important; }
+body.light .about-lead         { color: #3E92CC !important; border-left-color: #3E92CC !important; }
+body.light .about-p            { color: #2a4070 !important; }
+body.light .about-p strong     { color: #0A2463 !important; }
+body.light .about-vals         { background: rgba(10,36,99,.1) !important; border-color: rgba(10,36,99,.1) !important; }
+body.light .a-val              { background: #0A2463 !important; border-color: rgba(62,146,204,.2) !important; box-shadow: 0 4px 16px rgba(10,36,99,.15) !important; }
+body.light .a-val:hover        { background: #143590 !important; }
+body.light .a-val-head span    { color: #f0f4ff !important; }
+body.light .a-val-head i       { color: #3E92CC !important; }
+body.light .a-val-body         { color: #b8cae0 !important; }
+body.light .about-stats        { border-top-color: rgba(10,36,99,.15) !important; }
+body.light .as-n               { color: #3E92CC !important; }
+body.light .as-l               { color: #4a6690 !important; }
+body.light .about-photo-name   { color: #f0f4ff !important; }
+
+/* ══ SERVICES ══ */
+body.light .svc-grid           { background: rgba(10,36,99,.1) !important; border-color: rgba(10,36,99,.1) !important; }
+body.light .svc-card           { background: #0A2463 !important; box-shadow: 0 6px 24px rgba(10,36,99,.18) !important; }
+body.light .svc-card:hover     { background: #143590 !important; }
+body.light .svc-cat            { color: #3E92CC !important; }
+body.light .svc-title          { color: #f0f4ff !important; }
+body.light .svc-desc           { color: #b8cae0 !important; }
+body.light .svc-list li        { color: #8fa3c8 !important; }
+body.light .svc-list li i      { color: #3E92CC !important; }
+
+/* ══ FORMATIONS ══ */
+body.light .form-head h2       { color: #0A2463 !important; }
+body.light .fc                 { background: #0A2463 !important; border-color: rgba(62,146,204,.2) !important; box-shadow: 0 6px 24px rgba(10,36,99,.18) !important; }
+body.light .fc:hover           { background: #143590 !important; border-color: #3E92CC !important; }
+body.light .fc-cat             { color: #3E92CC !important; }
+body.light .fc-title           { color: #f0f4ff !important; }
+body.light .fc-desc            { color: #b8cae0 !important; }
+body.light .fc-price           { color: #3E92CC !important; }
+body.light .fc-price small     { color: #8fa3c8 !important; }
+body.light .fc-foot            { border-top-color: rgba(62,146,204,.2) !important; }
+
+/* ══ WHY ══ */
+body.light .why-grid           { background: rgba(10,36,99,.1) !important; border-color: rgba(10,36,99,.1) !important; }
+body.light .wc                 { background: #0A2463 !important; box-shadow: 0 4px 16px rgba(10,36,99,.12) !important; }
+body.light .wc:hover           { background: #143590 !important; }
+body.light .wc-icon            { background: rgba(62,146,204,.15) !important; border-color: rgba(62,146,204,.3) !important; }
+body.light .wc:hover .wc-icon  { background: #3E92CC !important; }
+body.light .wc-title           { color: #f0f4ff !important; }
+body.light .wc-text            { color: #b8cae0 !important; }
+
+/* ══ PORTFOLIO ══ */
+body.light .port-filters .f-btn       { color: #4a6690 !important; border-color: rgba(10,36,99,.2) !important; background: #fff !important; }
+body.light .port-filters .f-btn.on,
+body.light .port-filters .f-btn:hover { background: #0A2463 !important; color: #f0f4ff !important; border-color: #0A2463 !important; }
+body.light .port-cta .btn-ghost       { border-color: #0A2463 !important; color: #0A2463 !important; }
+body.light .port-cta .btn-ghost:hover { background: #0A2463 !important; color: #f0f4ff !important; }
+
+/* ══ CONTACT ══ */
+body.light .c-info             { background: #0A2463 !important; box-shadow: 0 6px 24px rgba(10,36,99,.2) !important; }
+body.light .c-info-title       { color: #f0f4ff !important; }
+body.light .c-icon             { background: rgba(62,146,204,.18) !important; border-color: rgba(62,146,204,.3) !important; }
+body.light .c-lbl              { color: #3E92CC !important; }
+body.light .c-val,
+body.light .c-val a            { color: #f0f4ff !important; }
+body.light .soc                { background: rgba(62,146,204,.15) !important; border-color: rgba(62,146,204,.25) !important; color: #f0f4ff !important; }
+body.light .soc:hover          { background: #3E92CC !important; border-color: #3E92CC !important; }
+body.light .c-form             { background: #ffffff !important; border: 1px solid rgba(10,36,99,.1) !important; padding: 36px !important; box-shadow: 0 4px 20px rgba(10,36,99,.06) !important; }
+body.light .f-grp label        { color: #0A2463 !important; font-weight: 600 !important; }
+body.light .f-grp input,
+body.light .f-grp textarea,
+body.light .f-grp select       { background: #f0f5ff !important; border-color: rgba(10,36,99,.18) !important; color: #0A2463 !important; }
+body.light .f-grp input::placeholder,
+body.light .f-grp textarea::placeholder { color: #8aa4cc !important; }
+body.light .f-grp input:focus,
+body.light .f-grp textarea:focus,
+body.light .f-grp select:focus { border-color: #3E92CC !important; background: #e8f2ff !important; }
+body.light .c-form .btn-fill   { background: #0A2463 !important; border-color: #0A2463 !important; color: #f0f4ff !important; }
+body.light .c-form .btn-fill:hover { background: #143590 !important; }
+
+/* ══ MODAL ══ */
+body.light .modal-ov           { background: rgba(10,36,99,.5) !important; backdrop-filter: blur(16px) !important; }
+body.light .modal-box          { background: #ffffff !important; border-color: rgba(10,36,99,.15) !important; box-shadow: 0 20px 60px rgba(10,36,99,.2) !important; }
+body.light .m-chip             { color: #3E92CC !important; }
+body.light .m-title            { color: #0A2463 !important; }
+body.light .m-desc             { color: #4a6690 !important; }
+body.light .m-price            { color: #0A2463 !important; }
+body.light .m-price small      { color: #4a6690 !important; }
+body.light .m-inp              { background: #f0f5ff !important; border-color: rgba(10,36,99,.18) !important; color: #0A2463 !important; }
+body.light .m-inp::placeholder { color: #8aa4cc !important; }
+body.light .m-secure           { color: #4a6690 !important; }
+
+/* ══ FOOTER inchangé ══ */
+body.light footer              { background: #0A2463 !important; }
+body.light .ft-tagline,
+body.light .ft-copy            { color: #8fa3c8 !important; }
+body.light .ft-col h4          { color: #f0f4ff !important; border-bottom-color: #3E92CC !important; }
+body.light .ft-col ul a        { color: #8fa3c8 !important; }
+body.light .ft-col ul a:hover  { color: #3E92CC !important; }
+body.light .ft-bottom          { border-top-color: rgba(62,146,204,.18) !important; }
+body.light .admin-link         { color: #0A2463 !important; }
+
+/* ── Scrollbar ── */
+body.light ::-webkit-scrollbar-track { background: #dce8ff; }
+body.light ::-webkit-scrollbar-thumb { background: #0A2463; }
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  font-family:'Poppins',sans-serif;
+  color:var(--white);
+  overflow-x:hidden; line-height:1.65;
+  background: linear-gradient(
+    180deg,
+    #0d1124 0%,
+    #0e1d3a 15%,
+    #0b2255 32%,
+    #0e2860 48%,
+    #092258 62%,
+    #0d1d4a 76%,
+    #111630 90%,
+    #0f1226 100%
+  );
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+img { display:block; max-width:100%; }
+a  { text-decoration:none; color:inherit; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg-0); }
+::-webkit-scrollbar-thumb { background:var(--blue); border-radius:3px; }
+
+/* ══ UTILITIES ══ */
+.chip {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--blue-dim); border:1px solid var(--blue-line);
+  padding:5px 16px; border-radius:50px;
+  font-size:10px; font-weight:700; letter-spacing:3px;
+  color:var(--blue); text-transform:uppercase;
+  margin-bottom:14px;
+}
+.chip i { font-size:7px; animation:blink 2.4s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+
+.display {
+  font-family:'Bebas Neue',sans-serif;
+  letter-spacing:1.5px; line-height:1.0;
+  color:var(--white);
+}
+.display-ghost {
+  font-family:'Bebas Neue',sans-serif;
+  letter-spacing:1.5px; line-height:1.0;
+  color:transparent; -webkit-text-stroke:2px var(--blue);
+}
+
+.reveal { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1); }
+.reveal.in { opacity:1; transform:none; }
+.d1{transition-delay:.1s;} .d2{transition-delay:.2s;} .d3{transition-delay:.3s;} .d4{transition-delay:.4s;}
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+#nav {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:0 64px; transition:background .4s, border-color .4s;
+  border-bottom:1px solid transparent;
+}
+#nav.scrolled {
+  background:rgba(12,14,30,.96);
+  backdrop-filter:blur(18px);
+  border-bottom-color:var(--blue-line);
+}
+.nav-wrap {
+  display:flex; align-items:center; justify-content:space-between;
+  height:72px;
+}
+.nav-logo img { height:46px; width:auto; }
+.nav-list { display:flex; gap:36px; list-style:none; }
+.nav-list a {
+  font-size:12.5px; font-weight:600; letter-spacing:2px;
+  text-transform:uppercase; color:var(--grey2);
+  transition:color .2s; position:relative; padding-bottom:4px;
+}
+.nav-list a::after {
+  content:''; position:absolute; bottom:0; left:0;
+  width:0; height:2px; background:var(--blue); transition:width .3s;
+}
+.nav-list a:hover { color:var(--white); }
+.nav-list a:hover::after { width:100%; }
+.nav-cta {
+  background:var(--blue); color:var(--white)!important;
+  padding:9px 24px; border-radius:3px; letter-spacing:1.5px!important;
+  transition:background .2s!important;
+}
+.nav-cta:hover { background:var(--blue-lt)!important; }
+.nav-cta::after { display:none!important; }
+.burger {
+  display:none; background:none; border:none;
+  color:var(--white); font-size:1.5rem; cursor:pointer;
+}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero {
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 64px;
+  position:relative; overflow:hidden; text-align:center;
+  background:
+    linear-gradient(170deg, rgba(10,36,99,.82) 0%, rgba(11,16,36,.97) 55%, rgba(9,14,28,.99) 100%),
+    url('Fr/4.jpg') no-repeat center/cover;
+}
+
+/* animated dot grid */
+.hero-dots {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(rgba(62,146,204,.22) 1px, transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%, black 20%, transparent 80%);
+}
+
+/* center glow */
+.hero-glow-l {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:900px; height:700px; border-radius:50%;
+  background:radial-gradient(circle, rgba(62,146,204,.06) 0%, transparent 65%);
+  pointer-events:none;
+}
+/* bottom fade */
+.hero-glow-r {
+  position:absolute; bottom:0; left:0; right:0; height:180px;
+  background:linear-gradient(to top, rgba(9,14,28,.8) 0%, transparent 100%);
+  pointer-events:none;
+}
+#hero::before {
+  content:'';
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:1px; height:100px;
+  background:linear-gradient(to bottom, transparent, rgba(62,146,204,.45));
+  pointer-events:none;
+}
+
+/* ── centered content fills available space ── */
+.hero-content {
+  position:relative; z-index:2;
+  width:100%; max-width:900px;
+  flex:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding-top:90px; padding-bottom:60px;
+}
+
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(62,146,204,.08); border:1px solid rgba(62,146,204,.25);
+  padding:7px 20px; border-radius:50px;
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--blue); text-transform:uppercase;
+  margin-bottom:28px;
+  animation:fadeUp .6s ease both;
+}
+.hero-eyebrow i { font-size:7px; animation:blink 2.4s infinite; }
+
+/* ── title: both words on ONE line ── */
+.hero-title-row {
+  display:flex; align-items:baseline; gap:20px; justify-content:center;
+  flex-wrap:nowrap; white-space:nowrap;
+  margin-bottom:28px;
+  animation:fadeUp .65s .08s ease both;
+}
+.hero-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(56px,9.5vw,136px);
+  letter-spacing:2px; line-height:1;
+  color:var(--white);
+}
+.hero-title-g {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(56px,9.5vw,136px);
+  letter-spacing:2px; line-height:1;
+  color:transparent; -webkit-text-stroke:2px var(--blue);
+}
+
+.hero-tagline {
+  font-size:16px; font-weight:300; line-height:1.8;
+  color:rgba(200,218,248,.68); max-width:500px;
+  margin-bottom:36px;
+  animation:fadeUp .65s .16s ease both;
+}
+
+.hero-pills {
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  margin-bottom:44px;
+  animation:fadeUp .65s .24s ease both;
+}
+.hero-pill {
+  padding:8px 20px;
+  background:rgba(62,146,204,.07);
+  border:1px solid rgba(62,146,204,.2);
+  border-radius:50px;
+  font-size:11.5px; font-weight:500; letter-spacing:.8px;
+  color:var(--grey2); transition:all .25s;
+}
+.hero-pill:hover { background:rgba(62,146,204,.18); border-color:var(--blue); color:var(--white); }
+
+.hero-btns {
+  display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+  animation:fadeUp .65s .30s ease both;
+}
+
+/* ── stats bar pinned to bottom of hero ── */
+.hero-stats-row {
+  position:relative; z-index:2;
+  width:100%;
+  display:flex;
+  border-top:1px solid rgba(62,146,204,.18);
+  flex-shrink:0;
+  animation:fadeUp .7s .42s ease both;
+}
+.h-stat {
+  flex:1; padding:22px 16px; text-align:center;
+  border-right:1px solid rgba(62,146,204,.15);
+  background:rgba(10,36,99,.22);
+  backdrop-filter:blur(12px);
+  transition:background .2s;
+}
+.h-stat:last-child { border-right:none; }
+.h-stat:hover { background:rgba(62,146,204,.1); }
+.h-n { font-family:'Bebas Neue',sans-serif; font-size:42px; color:var(--blue); line-height:1; }
+.h-l { font-size:10px; font-weight:700; letter-spacing:2px; color:var(--grey2); text-transform:uppercase; margin-top:3px; }
+
+.hero-stats { display:none; }
+
+.hero-scroll {
+  position:absolute; bottom:72px; left:50%; transform:translateX(-50%); z-index:3;
+  display:flex; align-items:center; gap:12px;
+}
+.h-scroll-line { width:36px; height:1px; background:linear-gradient(to right,var(--blue),transparent); }
+.hero-scroll span { font-size:10px; letter-spacing:3px; color:var(--grey); text-transform:uppercase; }
+
+/* btns */
+.btn-fill {
+  background:var(--blue); color:var(--white); border:2px solid var(--blue);
+  padding:13px 34px; font-size:12px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all .22s;
+  display:inline-block; font-family:'Poppins',sans-serif;
+}
+.btn-fill:hover { background:var(--blue-lt); border-color:var(--blue-lt); transform:translateY(-2px); }
+.btn-ghost {
+  background:transparent; color:var(--grey2); border:2px solid rgba(255,255,255,.15);
+  padding:13px 34px; font-size:12px; font-weight:500; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all .22s;
+  display:inline-block; font-family:'Poppins',sans-serif;
+}
+.btn-ghost:hover { border-color:var(--blue); color:var(--blue); }
+
+/* ══════════════════════════════════════════
+   À PROPOS  — redesigned
+══════════════════════════════════════════ */
+#about { padding:110px 64px; background:transparent; position:relative; }
+
+/* subtle bg glow behind section */
+#about::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(10,36,99,.22), transparent 70%);
+}
+
+.about-inner {
+  position:relative; z-index:1;
+  max-width:1100px; margin:0 auto;
+}
+
+/* header row */
+.about-header {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:40px; margin-bottom:60px; flex-wrap:wrap;
+}
+.about-header h2 { font-size:clamp(44px,5vw,76px); line-height:1; }
+.about-header-right {
+  max-width:460px;
+}
+.about-lead {
+  font-size:17px; font-weight:300; font-style:italic;
+  color:var(--blue-lt); line-height:1.75;
+  padding-left:18px; border-left:3px solid var(--blue);
+}
+
+/* body row — photo floated into text */
+.about-body {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:64px;
+  align-items:start;
+}
+
+.about-p { font-size:15px; line-height:1.9; color:var(--grey2); margin-bottom:18px; }
+.about-p strong { color:var(--white); font-weight:600; }
+
+/* photo card — circle style */
+.about-photo-card {
+  position:sticky; top:100px;
+  display:flex; flex-direction:column; align-items:center;
+}
+
+/* outer decorative ring */
+.about-photo-ring {
+  position:relative;
+  width:320px; height:320px;
+  margin-bottom:24px;
+}
+/* spinning dashed ring */
+.about-photo-ring::before {
+  content:'';
+  position:absolute; inset:-10px;
+  border-radius:50%;
+  border:1px dashed rgba(62,146,204,.3);
+  animation:spin 20s linear infinite;
+}
+/* solid inner ring */
+.about-photo-ring::after {
+  content:'';
+  position:absolute; inset:-2px;
+  border-radius:50%;
+  border:2px solid rgba(62,146,204,.2);
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* blue accent arc */
+.about-ring-arc {
+  position:absolute; inset:-6px;
+  border-radius:50%;
+  border:2px solid transparent;
+  border-top-color:var(--blue);
+  border-right-color:var(--blue);
+  pointer-events:none;
+}
+
+.about-photo-frame {
+  width:320px; height:320px;
+  border-radius:50%;
+  overflow:hidden;
+  position:relative;
+  border:3px solid rgba(62,146,204,.25);
+  box-shadow:
+    0 0 0 6px rgba(10,36,99,.4),
+    0 0 50px rgba(62,146,204,.15),
+    0 20px 60px rgba(0,0,0,.5);
+}
+/* remove old pseudo-element corner lines */
+.about-photo-frame::before,
+.about-photo-frame::after { display:none; }
+
+.about-photo-frame img {
+  width:100%; height:100%; object-fit:cover; object-position:top center;
+  display:block;
+  filter:brightness(.9) saturate(1.05);
+  transition:filter .5s, transform .7s;
+}
+.about-photo-card:hover .about-photo-frame img {
+  filter:brightness(1) saturate(1.15);
+  transform:scale(1.05);
+}
+.about-photo-frame .photo-tint {
+  position:absolute; inset:0; pointer-events:none; border-radius:50%;
+  background:radial-gradient(circle at 30% 20%, rgba(62,146,204,.12), transparent 60%);
+}
+/* no bottom gradient overlay for circle */
+.about-photo-frame .photo-bottom { display:none; }
+
+/* name card below circle */
+.about-photo-identity {
+  text-align:center;
+}
+.about-photo-name { font-size:17px; font-weight:700; color:var(--white); line-height:1.3; }
+.about-photo-role {
+  font-size:11px; font-weight:500; color:var(--blue-lt); letter-spacing:1px; margin-top:5px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.about-photo-role::before, .about-photo-role::after {
+  content:''; display:inline-block; width:20px; height:1px; background:var(--blue); opacity:.5;
+}
+
+/* stat strip below */
+.about-stats {
+  display:flex; gap:28px;
+  margin-top:28px; padding-top:24px;
+  border-top:1px solid var(--blue-line);
+  width:100%;
+  justify-content:center;
+}
+.as {
+  text-align:center;
+  transition:transform .2s;
+}
+.as:hover { transform:translateY(-3px); }
+.as-n { font-family:'Bebas Neue',sans-serif; font-size:34px; color:var(--blue); line-height:1; }
+.as-l { font-size:9.5px; font-weight:700; letter-spacing:2px; color:var(--grey2); text-transform:uppercase; margin-top:3px; }
+
+/* 2×2 values */
+.about-vals {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:1px; background:var(--blue-line);
+  margin-top:32px;
+  border:1px solid var(--blue-line);
+}
+.a-val {
+  background:rgba(13,17,36,.6); padding:20px 22px;
+  transition:background .2s;
+  backdrop-filter:blur(8px);
+}
+.a-val:hover { background:rgba(62,146,204,.1); }
+.a-val-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.a-val-head i { color:var(--blue); font-size:16px; }
+.a-val-head span { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--white); }
+.a-val-body { font-size:13.5px; color:var(--grey); line-height:1.65; }
+
+/* ══════════════════════════════════════════
+   SERVICES
+══════════════════════════════════════════ */
+#services { padding:110px 64px; background:var(--bg-0); }
+.section-head { text-align:center; margin-bottom:56px; }
+.section-head h2 { font-size:clamp(42px,5.5vw,80px); margin-bottom:14px; }
+.section-head p  { font-size:15.5px; color:var(--grey2); max-width:540px; margin:0 auto; }
+
+.svc-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--blue-line);
+  border:1px solid var(--blue-line);
+}
+.svc-card {
+  background:var(--bg-0); overflow:hidden;
+  position:relative; transition:background .3s;
+}
+.svc-card:hover { background:var(--bg-2); }
+.svc-card::after {
+  content:''; position:absolute; bottom:0; left:0;
+  width:0; height:3px; background:var(--blue); transition:width .4s;
+}
+.svc-card:hover::after { width:100%; }
+.svc-img-w { height:210px; overflow:hidden; position:relative; }
+.svc-img {
+  width:100%; height:100%; object-fit:cover;
+  filter:brightness(.7) saturate(.8);
+  transition:transform .6s, filter .6s;
+}
+.svc-card:hover .svc-img { transform:scale(1.07); filter:brightness(.95) saturate(1.1); }
+.svc-num {
+  position:absolute; top:10px; right:14px;
+  font-family:'Bebas Neue',sans-serif; font-size:52px;
+  color:rgba(255,255,255,.05); line-height:1; pointer-events:none;
+  transition:color .3s;
+}
+.svc-card:hover .svc-num { color:rgba(62,146,204,.14); }
+.svc-body { padding:28px; }
+.svc-cat { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--blue); text-transform:uppercase; margin-bottom:8px; }
+.svc-title { font-size:18px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; }
+.svc-desc { font-size:14px; line-height:1.8; color:var(--grey); margin-bottom:18px; }
+.svc-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.svc-list li { font-size:14px; color:var(--grey2); display:flex; align-items:flex-start; gap:9px; }
+.svc-list li i { color:var(--blue); font-size:10px; margin-top:5px; flex-shrink:0; }
+
+/* ══════════════════════════════════════════
+   FORMATIONS
+══════════════════════════════════════════ */
+#formations { padding:110px 64px; background:var(--bg-1); }
+.form-head {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  margin-bottom:48px; gap:20px; flex-wrap:wrap;
+}
+.form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.fc {
+  background:var(--bg-2); border:1px solid var(--blue-line);
+  overflow:hidden; transition:transform .3s, border-color .3s; cursor:pointer;
+}
+.fc:hover { transform:translateY(-6px); border-color:rgba(62,146,204,.45); }
+.fc-thumb { width:100%; aspect-ratio:16/9; overflow:hidden; position:relative; }
+.fc-thumb img {
+  width:100%; height:100%; object-fit:cover;
+  filter:brightness(.75); transition:transform .5s,filter .5s;
+}
+.fc:hover .fc-thumb img { transform:scale(1.07); filter:brightness(.95); }
+.fc-badge {
+  position:absolute; top:12px; left:12px;
+  background:var(--blue); color:var(--white);
+  font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  padding:4px 12px;
+}
+.fc-lock {
+  position:absolute; inset:0; background:rgba(10,14,30,.45);
+  display:flex; align-items:center; justify-content:center;
+}
+.fc-lock i { font-size:24px; color:rgba(255,255,255,.45); }
+.fc-body { padding:24px; }
+.fc-cat { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--blue); text-transform:uppercase; margin-bottom:8px; }
+.fc-title { font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px; line-height:1.3; }
+.fc-desc { font-size:14px; line-height:1.75; color:var(--grey); margin-bottom:18px; }
+.fc-foot { display:flex; justify-content:space-between; align-items:center; padding-top:14px; border-top:1px solid var(--blue-line); }
+.fc-price { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--blue); line-height:1; }
+.fc-price small { font-family:'Poppins',sans-serif; font-size:12px; font-weight:400; color:var(--grey); }
+.btn-buy {
+  background:var(--blue); color:var(--white); border:none;
+  padding:10px 20px; font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; cursor:pointer; transition:background .2s;
+  font-family:'Poppins',sans-serif;
+}
+.btn-buy:hover { background:var(--blue-lt); }
+
+/* ══════════════════════════════════════════
+   WHY US
+══════════════════════════════════════════ */
+#why { padding:110px 64px; background:var(--bg-0); }
+.why-grid {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--blue-line);
+  border:1px solid var(--blue-line);
+  margin-top:56px;
+}
+.wc {
+  background:var(--bg-0); padding:42px 26px;
+  text-align:center; transition:background .3s;
+}
+.wc:hover { background:var(--navy); }
+.wc-icon {
+  width:76px; height:76px; margin:0 auto 22px;
+  background:var(--blue-dim); border:1px solid var(--blue-line);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:25px; color:var(--blue); transition:all .3s;
+}
+.wc:hover .wc-icon { background:var(--blue); color:var(--white); border-color:var(--blue); }
+.wc-title { font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.wc-text  { font-size:14px; line-height:1.75; color:var(--grey); }
+
+/* ══════════════════════════════════════════
+   RÉALISATIONS
+══════════════════════════════════════════ */
+#portfolio {
+  padding:110px 64px;
+  background:transparent;
+  position:relative;
+}
+#portfolio::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 50% 50%, rgba(10,36,99,.18), transparent 70%);
+}
+
+.port-filters { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:32px 0 48px; }
+.f-btn {
+  padding:8px 22px; border:1px solid rgba(62,146,204,.25); background:none;
+  color:var(--grey2); font-size:10.5px; font-weight:600; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; border-radius:50px;
+  transition:all .2s; font-family:'Poppins',sans-serif;
+}
+.f-btn.on,.f-btn:hover { border-color:var(--blue); color:var(--blue); background:rgba(62,146,204,.1); }
+
+/* ══ RÉALISATIONS — mosaïque ══ */
+.port-mosaic {
+  display:grid;
+  grid-template-columns:1.6fr 1fr 1fr;
+  grid-template-rows:280px 240px;
+  gap:10px;
+}
+
+/* Grande image à gauche sur 2 rangées */
+.pm-1 { grid-column:1; grid-row:1/3; }
+/* 4 petites à droite */
+.pm-2 { grid-column:2; grid-row:1; }
+.pm-3 { grid-column:3; grid-row:1; }
+.pm-4 { grid-column:2; grid-row:2; }
+.pm-5 { grid-column:3; grid-row:2; }
+
+.pm {
+  position:relative; overflow:hidden; cursor:pointer;
+  background:var(--bg-2); min-height:0;
+}
+.pm img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:brightness(.65) saturate(.85);
+  transition:transform .65s ease, filter .5s ease;
+}
+.pm:hover img { transform:scale(1.08); filter:brightness(.95) saturate(1.15); }
+.pm-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(10,36,99,.9) 0%, transparent 60%);
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:20px; opacity:0; transition:opacity .3s;
+}
+.pm:hover .pm-overlay { opacity:1; }
+.pm-cat  { font-size:10px; font-weight:700; letter-spacing:3px; color:var(--blue-lt); text-transform:uppercase; margin-bottom:4px; }
+.pm-name { font-size:15px; font-weight:800; text-transform:uppercase; color:var(--white); }
+.pm-sub  { font-size:11px; color:rgba(255,255,255,.55); margin-top:3px; }
+.pm-featured {
+  position:absolute; top:14px; left:14px;
+  background:var(--blue); color:var(--white);
+  font-size:9px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; padding:4px 12px;
+}
+
+/* filtre actif : grille auto simple */
+.port-mosaic.filtered {
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:auto;
+}
+.port-mosaic.filtered .pm {
+  grid-column:auto !important;
+  grid-row:auto !important;
+  height:220px;
+}
+
+.port-cta { text-align:center; margin-top:44px; }
+
+/* ══════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════ */
+#contact { padding:110px 64px; background:var(--bg-1); }
+.contact-grid { display:grid; grid-template-columns:1fr 1.6fr; gap:40px; margin-top:56px; align-items:start; }
+
+.c-info {
+  background:var(--navy); border:1px solid rgba(62,146,204,.22);
+  padding:40px; display:flex; flex-direction:column; gap:0;
+}
+.c-info-title {
+  font-size:19px; font-weight:700; margin-bottom:28px;
+  padding-bottom:18px; border-bottom:1px solid rgba(62,146,204,.15);
+}
+.c-items { display:flex; flex-direction:column; gap:18px; margin-bottom:28px; }
+.c-item  { display:flex; align-items:flex-start; gap:14px; }
+.c-icon {
+  width:44px; height:44px; flex-shrink:0;
+  background:var(--blue-dim); border:1px solid var(--blue-line);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--blue); transition:all .2s;
+}
+.c-item:hover .c-icon { background:var(--blue); color:var(--white); }
+.c-lbl { font-size:10px; font-weight:700; letter-spacing:3px; color:var(--blue); text-transform:uppercase; margin-bottom:3px; }
+.c-val { font-size:15px; color:rgba(255,255,255,.85); }
+.soc-row { display:flex; gap:10px; }
+.soc {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--blue-dim); border:1px solid var(--blue-line);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--blue); font-size:14px; transition:all .2s;
+}
+.soc:hover { background:var(--blue); color:var(--white); transform:translateY(-3px); }
+
+.c-form { background:var(--bg-2); border:1px solid var(--blue-line); padding:40px; }
+.f-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.f-grp { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+.f-grp label { font-size:9.5px; font-weight:700; letter-spacing:3px; color:var(--grey); text-transform:uppercase; }
+.f-grp input,
+.f-grp textarea,
+.f-grp select {
+  background:var(--bg-3); border:1px solid var(--blue-line);
+  color:var(--white); padding:13px 16px; font-size:15px;
+  font-family:'Poppins',sans-serif; outline:none; resize:none;
+  transition:border-color .2s, background .2s;
+}
+.f-grp input:focus,
+.f-grp textarea:focus,
+.f-grp select:focus { border-color:var(--blue); background:rgba(62,146,204,.04); }
+.f-grp select option  { background:var(--bg-3); }
+.f-grp input::placeholder,
+.f-grp textarea::placeholder { color:var(--grey); font-size:14px; }
+.f-grp textarea { min-height:128px; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer { background:var(--bg-1); border-top:1px solid var(--blue-line); padding:64px 64px 0; }
+.ft-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:52px; }
+.ft-brand img    { height:42px; object-fit:contain; margin-bottom:16px; }
+.ft-tagline      { font-size:14px; color:var(--grey); line-height:1.8; max-width:270px; margin-bottom:22px; }
+.ft-col h4 {
+  font-size:12.5px; font-weight:800; letter-spacing:2px;
+  text-transform:uppercase; color:var(--white);
+  margin-bottom:18px; padding-bottom:10px;
+  border-bottom:2px solid var(--blue); display:inline-block;
+}
+.ft-col ul { list-style:none; display:flex; flex-direction:column; gap:9px; }
+.ft-col ul a { font-size:14px; color:var(--grey); display:flex; align-items:center; gap:7px; transition:all .2s; }
+.ft-col ul a i { color:var(--blue); font-size:10px; }
+.ft-col ul a:hover { color:var(--blue); padding-left:4px; }
+.ft-bottom {
+  border-top:1px solid var(--blue-line); padding:18px 0 20px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.ft-copy { font-size:11.5px; color:var(--grey); }
+/* ── Admin link : same colour as bg, barely visible on hover ── */
+.admin-link {
+  font-size:11px; color:var(--bg-1);
+  padding:4px 8px; border:1px solid transparent;
+  transition:color .5s, border-color .5s; border-radius:2px;
+  user-select:none;
+}
+.admin-link:hover { color:var(--grey); border-color:var(--blue-line); }
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.modal-ov {
+  position:fixed; inset:0; background:rgba(0,0,0,.88);
+  backdrop-filter:blur(16px); z-index:600;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.modal-ov.open { display:flex; }
+.modal-box {
+  background:var(--bg-2); border:1px solid rgba(62,146,204,.28);
+  max-width:500px; width:100%; padding:44px; position:relative;
+}
+.m-x {
+  position:absolute; top:18px; right:18px; background:none; border:none;
+  color:var(--grey); font-size:17px; cursor:pointer; transition:color .2s;
+}
+.m-x:hover { color:var(--blue); }
+.m-chip { font-size:10px; font-weight:700; letter-spacing:4px; color:var(--blue); text-transform:uppercase; margin-bottom:10px; }
+.m-title { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:1px; margin-bottom:10px; line-height:1.1; }
+.m-desc  { font-size:13px; color:var(--grey); line-height:1.7; margin-bottom:22px; }
+.m-price { font-family:'Bebas Neue',sans-serif; font-size:44px; color:var(--blue); margin-bottom:26px; line-height:1; }
+.m-price small { font-family:'Poppins',sans-serif; font-size:16px; font-weight:400; color:var(--grey); }
+.m-inputs { display:flex; flex-direction:column; gap:11px; }
+.m-inputs input {
+  background:var(--bg-3); border:1px solid var(--blue-line);
+  color:var(--white); padding:12px 16px; font-size:13.5px;
+  font-family:'Poppins',sans-serif; outline:none;
+  transition:border-color .2s; width:100%;
+}
+.m-inputs input:focus { border-color:var(--blue); }
+.m-inputs input::placeholder { color:var(--grey); }
+.btn-pay {
+  background:var(--blue); color:var(--white); border:none;
+  padding:14px; font-size:12px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:background .2s;
+  width:100%; font-family:'Poppins',sans-serif; margin-top:6px;
+}
+.btn-pay:hover { background:var(--blue-lt); }
+.m-secure { text-align:center; font-size:11px; color:var(--grey); margin-top:12px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.m-secure i { color:var(--blue); }
+.m-inp {
+  background:var(--bg-3); border:1px solid var(--blue-line);
+  color:var(--white); padding:12px 16px; font-size:13.5px;
+  font-family:'Poppins',sans-serif; outline:none;
+  transition:border-color .2s; width:100%;
+}
+.m-inp:focus { border-color:var(--blue); }
+.m-inp::placeholder { color:var(--grey); }
+
+/* ══════════════════════════════════════════
+   BACK-TO-TOP
+══════════════════════════════════════════ */
+#btt {
+  position:fixed; bottom:26px; right:26px; z-index:400;
+  width:44px; height:44px; border-radius:50%; border:none;
+  background:var(--blue); color:var(--white); font-size:15px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden; transition:all .3s;
+  box-shadow:0 4px 20px rgba(62,146,204,.4);
+}
+#btt.show { opacity:1; visibility:visible; }
+#btt:hover { background:var(--blue-lt); transform:translateY(-3px); }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════ */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(26px);}  to{opacity:1;transform:none;} }
+@keyframes fadeLeft { from{opacity:0;transform:translateX(26px);}  to{opacity:1;transform:none;} }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1200px){
+  #nav,#hero,#about,#services,#formations,#why,#portfolio,#contact,footer{padding-left:36px;padding-right:36px;}
+  .port-mosaic{ grid-template-rows:240px 200px; }
+}
+@media(max-width:1024px){
+  .about-body{grid-template-columns:1fr;}
+  .about-photo-card{position:static; margin:0 auto 48px; order:-1;}
+  .why-grid{grid-template-columns:1fr 1fr;}
+  .ft-grid{grid-template-columns:1fr 1fr;}
+  .port-mosaic{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:220px 180px 180px;
+  }
+  .pm-1{ grid-column:1/3; grid-row:1; }
+  .pm-2{ grid-column:1;   grid-row:2; }
+  .pm-3{ grid-column:2;   grid-row:2; }
+  .pm-4{ grid-column:1;   grid-row:3; }
+  .pm-5{ grid-column:2;   grid-row:3; }
+  .hero-stats-row { flex-wrap:wrap; }
+  .h-stat { flex:1; min-width:140px; }
+}
+@media(max-width:900px){
+  .svc-grid,.form-grid{grid-template-columns:1fr 1fr;}
+  .contact-grid{grid-template-columns:1fr;gap:24px;}
+}
+@media(max-width:768px){
+  #nav{padding:0 20px;}
+  #hero,#about,#services,#formations,#why,#portfolio,#contact,footer{padding:72px 20px;}
+  .nav-list{
+    position:fixed;top:72px;left:0;right:0;
+    background:rgba(12,14,30,.97);backdrop-filter:blur(20px);
+    flex-direction:column;align-items:center;padding:20px 0;gap:16px;
+    transform:translateY(-110%);transition:transform .3s;
+    border-bottom:1px solid var(--blue-line);
+  }
+  .nav-list.open{transform:translateY(0);}
+  .burger{display:block;}
+  .svc-grid,.form-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:1fr 1fr;}
+  .port-mosaic{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+  .pm-1,.pm-2,.pm-3,.pm-4,.pm-5{ grid-column:auto; grid-row:auto; height:200px; }
+  .ft-grid{grid-template-columns:1fr;gap:28px;}
+  .f-row{grid-template-columns:1fr;}
+  .about-header{flex-direction:column;gap:24px;margin-bottom:40px;}
+  .hero-stats-row { display:none; }
+  .about-photo-ring { width:240px; height:240px; }
+  .about-photo-frame { width:240px; height:240px; }
+  .about-vals{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .hero-btns{flex-direction:column;align-items:flex-start;}
+  .why-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ NAV ════════ -->
+<nav id="nav">
+  <div class="nav-wrap">
+    <a href="#hero"><img src="Fr/LOGO2.png" alt="MARDIGITAL AGENCE" style="height:46px;width:auto;display:block;"></a>
+    <ul class="nav-list" id="navList">
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#formations">Formations</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="burger" id="burger"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section id="hero">
+  <div class="hero-dots"></div>
+  <div class="hero-glow-l"></div>
+  <div class="hero-glow-r"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow"><i class="fas fa-circle"></i> Agence Créative — Lomé, Togo</div>
+
+    <div class="hero-title-row">
+      <div class="hero-title">THE BRAND</div>
+      <div class="hero-title-g">WORLD</div>
+    </div>
+
+    <p class="hero-tagline">
+      Design graphique, production audiovisuelle &amp; formations professionnelles.<br>
+      Votre image, portée au niveau de vos ambitions.
+    </p>
+
+    <div class="hero-pills">
+      <span class="hero-pill"><i class="fas fa-pen-nib" style="color:var(--blue);margin-right:6px;font-size:10px;"></i>Design Graphique</span>
+      <span class="hero-pill"><i class="fas fa-film" style="color:var(--blue);margin-right:6px;font-size:10px;"></i>Production Vidéo</span>
+      <span class="hero-pill"><i class="fas fa-broadcast-tower" style="color:var(--blue);margin-right:6px;font-size:10px;"></i>Live Streaming</span>
+      <span class="hero-pill"><i class="fas fa-graduation-cap" style="color:var(--blue);margin-right:6px;font-size:10px;"></i>Formation</span>
+    </div>
+
+    <div class="hero-btns">
+      <a href="#contact" class="btn-fill">Démarrer un projet <i class="fas fa-arrow-right" style="margin-left:8px;font-size:11px;"></i></a>
+      <a href="#portfolio" class="btn-ghost">Voir nos réalisations</a>
+    </div>
+  </div>
+
+  <!-- stats row integrated at bottom -->
+  <div class="hero-stats-row">
+    <div class="h-stat"><div class="h-n">100+</div><div class="h-l">Clients satisfaits</div></div>
+    <div class="h-stat"><div class="h-n">5+</div><div class="h-l">Années d'expérience</div></div>
+    <div class="h-stat"><div class="h-n">50+</div><div class="h-l">Projets livrés</div></div>
+    <div class="h-stat"><div class="h-n">3</div><div class="h-l">Services clés</div></div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="h-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ════════ À PROPOS ════════ -->
+<section id="about">
+  <div class="about-inner">
+
+    <!-- En-tête -->
+    <div class="about-header reveal">
+      <div>
+        <div class="chip" style="margin-bottom:16px;">À propos de nous</div>
+        <h2 class="display">NOTRE ADN<br><span style="-webkit-text-stroke:2px var(--blue);color:transparent;">CRÉATIF</span></h2>
+      </div>
+      <div class="about-header-right">
+        <p class="about-lead">
+          "Une image forte ne se construit pas par hasard — elle se pense, se travaille et se perfectionne. C'est notre mission, chaque jour."
+        </p>
+      </div>
+    </div>
+
+    <!-- Corps -->
+    <div class="about-body">
+
+      <!-- Colonne texte -->
+      <div class="about-text-col">
+        <p class="about-p reveal">
+          <strong>MARDIGITAL AGENCE</strong>, c'est l'histoire d'une obsession : faire en sorte que chaque marque togolaise rayonne à la hauteur de son potentiel. Mario Amevor Kossi a fondé l'agence avec une idée simple — les entrepreneurs locaux méritent un niveau de créativité identique aux standards internationaux, sans compromis.
+        </p>
+        <p class="about-p reveal d1">
+          Depuis plus de 5 ans, nous accompagnons des <strong>artistes, startups et entreprises</strong> dans la construction de leur identité visuelle, la production de leurs contenus et la diffusion de leurs événements en direct. Chaque collaboration est une opportunité de créer quelque chose qui <strong>n'existait pas encore.</strong>
+        </p>
+        <p class="about-p reveal d1">
+          Notre philosophie tient en trois mots : <strong>Créer.</strong> Diffuser. Former. Créer des visuels qui marquent. Diffuser des événements qui impressionnent. Former les créatifs de demain pour qu'ils repoussent les limites à leur tour.
+        </p>
+
+        <div class="about-vals reveal d2">
+          <div class="a-val">
+            <div class="a-val-head"><i class="fas fa-lightbulb"></i><span>Créativité sans limites</span></div>
+            <div class="a-val-body">Zéro template. Chaque projet repart d'une page blanche, avec une seule question : qu'est-ce qui va vraiment marquer ?</div>
+          </div>
+          <div class="a-val">
+            <div class="a-val-head"><i class="fas fa-shield-alt"></i><span>Fiabilité totale</span></div>
+            <div class="a-val-body">Un délai donné, c'est un délai tenu. Une qualité promise, c'est une qualité livrée. Toujours.</div>
+          </div>
+          <div class="a-val">
+            <div class="a-val-head"><i class="fas fa-handshake"></i><span>Relation directe</span></div>
+            <div class="a-val-body">Vous collaborez avec Mario en personne. Pas d'intermédiaires, pas de malentendus — juste une vraie conversation créative.</div>
+          </div>
+          <div class="a-val">
+            <div class="a-val-head"><i class="fas fa-rocket"></i><span>Impact durable</span></div>
+            <div class="a-val-body">On ne crée pas pour aujourd'hui. On crée pour que votre image reste forte, cohérente et pertinente au fil des années.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne photo — cercle élégant -->
+      <div class="about-photo-card reveal d2">
+        <div class="about-photo-ring">
+          <div class="about-ring-arc"></div>
+          <div class="about-photo-frame">
+            <img src="Fr/PROFIL2.jpg" alt="Amevor Kossi Mario">
+            <div class="photo-tint"></div>
+          </div>
+        </div>
+        <div class="about-photo-identity">
+          <div class="about-photo-name">Amevor Kossi Mario</div>
+          <div class="about-photo-role">Cofondateur · Directeur Créatif</div>
+        </div>
+        <div class="about-stats">
+          <div class="as"><div class="as-n">5+</div><div class="as-l">Années</div></div>
+          <div class="as"><div class="as-n">100+</div><div class="as-l">Clients</div></div>
+          <div class="as"><div class="as-n">50+</div><div class="as-l">Projets</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SERVICES ════════ -->
+<section id="services">
+  <div class="section-head">
+    <div class="chip reveal">Ce que nous faisons</div>
+    <h2 class="display reveal d1">NOS <span style="-webkit-text-stroke:2px rgba(62,146,204,.45);color:transparent;">SERVICES</span></h2>
+    <p class="reveal d2">Découvrez notre gamme complète de services professionnels</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card reveal d1">
+      <div class="svc-img-w">
+        <img src="Fr/02_Business_Card_Mockup.jpg" alt="Branding" class="svc-img">
+        <div class="svc-num">01</div>
+      </div>
+      <div class="svc-body">
+        <div class="svc-cat">Identité Visuelle</div>
+        <div class="svc-title">Branding & Design</div>
+        <p class="svc-desc">Création d'identités visuelles fortes et cohérentes qui reflètent l'essence de votre marque.</p>
+        <ul class="svc-list">
+          <li><i class="fas fa-chevron-right"></i>Logos professionnels</li>
+          <li><i class="fas fa-chevron-right"></i>Chartes graphiques</li>
+          <li><i class="fas fa-chevron-right"></i>Affiches, flyers, brochures</li>
+          <li><i class="fas fa-chevron-right"></i>Contenus réseaux sociaux</li>
+        </ul>
+      </div>
+    </div>
+    <div class="svc-card reveal d2">
+      <div class="svc-img-w">
+        <img src="Fr/FORMATION3.jpg" alt="Vidéo" class="svc-img">
+        <div class="svc-num">02</div>
+      </div>
+      <div class="svc-body">
+        <div class="svc-cat">Audiovisuel</div>
+        <div class="svc-title">Vidéo, Photo & Streaming</div>
+        <p class="svc-desc">Production de contenus visuels professionnels pour tous vos besoins audiovisuels.</p>
+        <ul class="svc-list">
+          <li><i class="fas fa-chevron-right"></i>Tournage / shooting professionnel</li>
+          <li><i class="fas fa-chevron-right"></i>Montage vidéo & étalonnage</li>
+          <li><i class="fas fa-chevron-right"></i>Clips, pubs, interviews, reels</li>
+          <li><i class="fas fa-chevron-right"></i>Live Streaming Multi-Caméras</li>
+          <li><i class="fas fa-chevron-right"></i>Aftermovies & reportages</li>
+        </ul>
+      </div>
+    </div>
+    <div class="svc-card reveal d3">
+      <div class="svc-img-w">
+        <img src="Fr/FORMATION.jpg" alt="Formation" class="svc-img">
+        <div class="svc-num">03</div>
+      </div>
+      <div class="svc-body">
+        <div class="svc-cat">Pédagogie</div>
+        <div class="svc-title">Formation & Coaching</div>
+        <p class="svc-desc">Transmission de savoir-faire professionnels pour les créatifs et les entrepreneurs.</p>
+        <ul class="svc-list">
+          <li><i class="fas fa-chevron-right"></i>Photoshop, Illustrator</li>
+          <li><i class="fas fa-chevron-right"></i>Premiere Pro, DaVinci Resolve</li>
+          <li><i class="fas fa-chevron-right"></i>Live Streaming avec Vmix</li>
+          <li><i class="fas fa-chevron-right"></i>Présentiel, en ligne ou hybride</li>
+          <li><i class="fas fa-chevron-right"></i>Accompagnement créatifs indépendants</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FORMATIONS ════════ -->
+<section id="formations">
+  <div class="form-head">
+    <div>
+      <div class="chip reveal">Accès en ligne</div>
+      <h2 class="display reveal d1">NOS <span style="-webkit-text-stroke:2px rgba(62,146,204,.45);color:transparent;">FORMATIONS</span></h2>
+    </div>
+  </div>
+  <div class="form-grid">
+    <div class="fc reveal d1" onclick="openModal('Maîtriser Photoshop','25 000','Apprenez Photoshop de A à Z et créez des visuels percutants pour votre communication.')">
+      <div class="fc-thumb">
+        <img src="Fr/FORMATION.jpg" alt="Photoshop">
+        <div class="fc-badge">Populaire</div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-cat">Design Graphique</div>
+        <div class="fc-title">Maîtriser Photoshop</div>
+        <p class="fc-desc">De débutant à expert — retouche photo, compositions et visuels professionnels.</p>
+        <div class="fc-foot">
+          <div class="fc-price">25 000 <small>FCFA</small></div>
+          <button class="btn-buy" onclick="event.stopPropagation();openModal('Maîtriser Photoshop','25 000','Apprenez Photoshop de A à Z.')">Acheter</button>
+        </div>
+      </div>
+    </div>
+    <div class="fc reveal d2" onclick="openModal('Live Streaming Pro — Vmix','35 000','Maîtrisez le live streaming professionnel multi-caméras avec Vmix.')">
+      <div class="fc-thumb">
+        <img src="Fr/FORMATION3.jpg" alt="Vmix">
+        <div class="fc-lock"><i class="fas fa-lock"></i></div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-cat">Production Vidéo</div>
+        <div class="fc-title">Live Streaming Pro — Vmix</div>
+        <p class="fc-desc">Productions live multi-caméras avec un rendu broadcast professionnel.</p>
+        <div class="fc-foot">
+          <div class="fc-price">35 000 <small>FCFA</small></div>
+          <button class="btn-buy" onclick="event.stopPropagation();openModal('Live Streaming Pro — Vmix','35 000','Live streaming professionnel multi-caméras.')">Acheter</button>
+        </div>
+      </div>
+    </div>
+    <div class="fc reveal d3" onclick="openModal('Premiere Pro — Montage','30 000','Techniques de montage avancées pour clips, publicités et contenu digital.')">
+      <div class="fc-thumb">
+        <img src="Fr/MONTAGE.jpg" alt="Premiere Pro">
+        <div class="fc-lock"><i class="fas fa-lock"></i></div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-cat">Montage Vidéo</div>
+        <div class="fc-title">Premiere Pro — Montage</div>
+        <p class="fc-desc">Montage avancé pour clips, publicités et contenus digitaux professionnels.</p>
+        <div class="fc-foot">
+          <div class="fc-price">30 000 <small>FCFA</small></div>
+          <button class="btn-buy" onclick="event.stopPropagation();openModal('Premiere Pro — Montage','30 000','Techniques de montage avancées.')">Acheter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ WHY ════════ -->
+<section id="why">
+  <div class="section-head">
+    <div class="chip reveal">Pourquoi nous choisir</div>
+    <h2 class="display reveal d1">CE QUI NOUS <span style="-webkit-text-stroke:2px rgba(62,146,204,.45);color:transparent;">DISTINGUE</span></h2>
+    <p class="reveal d2">Ce qui nous différencie de la concurrence</p>
+  </div>
+  <div class="why-grid">
+    <div class="wc reveal d1"><div class="wc-icon"><i class="fas fa-lightbulb"></i></div><div class="wc-title">Créativité professionnelle</div><p class="wc-text">Des idées innovantes pour faire ressortir votre marque dans un marché saturé.</p></div>
+    <div class="wc reveal d2"><div class="wc-icon"><i class="fas fa-clock"></i></div><div class="wc-title">Respect des délais</div><p class="wc-text">Nous livrons dans les temps avec une qualité constante, sans compromis.</p></div>
+    <div class="wc reveal d3"><div class="wc-icon"><i class="fas fa-user-tie"></i></div><div class="wc-title">Expérience sur mesure</div><p class="wc-text">Approche personnalisée pour chaque projet et chaque client, sans copier-coller.</p></div>
+    <div class="wc reveal d4"><div class="wc-icon"><i class="fas fa-chess"></i></div><div class="wc-title">Approche stratégique</div><p class="wc-text">Communication pensée pour atteindre vos objectifs business concrets.</p></div>
+  </div>
+</section>
+
+<!-- ════════ RÉALISATIONS ════════ -->
+<section id="portfolio">
+  <div class="section-head">
+    <div class="chip reveal">Notre travail</div>
+    <h2 class="display reveal d1" style="color:var(--white);">NOS <span style="-webkit-text-stroke:2px rgba(62,146,204,.55);color:transparent;">RÉALISATIONS</span></h2>
+    <p class="reveal d2" style="color:var(--grey2);">Découvrez quelques-uns de nos meilleurs projets</p>
+  </div>
+
+  <div class="port-filters reveal d2">
+    <button class="f-btn on">Tout</button>
+    <button class="f-btn">Branding</button>
+    <button class="f-btn">Photo</button>
+    <button class="f-btn">Vidéo</button>
+    <button class="f-btn">Design</button>
+  </div>
+
+  <!-- mosaic grid -->
+  <div class="port-mosaic" id="portMosaic">
+    <div class="pm pm-1 reveal" data-cat="branding">
+      <img src="Fr/ARTISTE ENSEMBLE.jpg" alt="Campagne Branding">
+      <span class="pm-featured">À la une</span>
+      <div class="pm-overlay">
+        <div class="pm-cat">Branding</div>
+        <div class="pm-name">Campagne Branding</div>
+        <div class="pm-sub">Identité visuelle complète</div>
+      </div>
+    </div>
+    <div class="pm pm-2 reveal d1" data-cat="photo">
+      <img src="Fr/SHOOTING.JPG" alt="Shooting Photo">
+      <div class="pm-overlay">
+        <div class="pm-cat">Photo</div>
+        <div class="pm-name">Shooting Photo</div>
+        <div class="pm-sub">Photographie professionnelle</div>
+      </div>
+    </div>
+    <div class="pm pm-3 reveal d2" data-cat="design">
+      <img src="Fr/GIDLINES2.jpg" alt="Charte graphique">
+      <div class="pm-overlay">
+        <div class="pm-cat">Design</div>
+        <div class="pm-name">Charte Graphique</div>
+        <div class="pm-sub">Guidelines &amp; identité</div>
+      </div>
+    </div>
+    <div class="pm pm-4 reveal d1" data-cat="branding">
+      <img src="Fr/02_Business_Card_Mockup.jpg" alt="Branding">
+      <div class="pm-overlay">
+        <div class="pm-cat">Branding</div>
+        <div class="pm-name">Identité Visuelle</div>
+        <div class="pm-sub">Business card &amp; print</div>
+      </div>
+    </div>
+    <div class="pm pm-5 reveal d2" data-cat="video">
+      <img src="Fr/MONTAGE.jpg" alt="Montage Vidéo">
+      <div class="pm-overlay">
+        <div class="pm-cat">Vidéo</div>
+        <div class="pm-name">Montage Vidéo</div>
+        <div class="pm-sub">Clip promotionnel</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="port-cta reveal">
+    <a href="https://www.behance.net/mariodesign2" target="_blank" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;">
+      <i class="fab fa-behance"></i> Voir plus sur Behance
+    </a>
+  </div>
+</section>
+
+<!-- ════════ CONTACT ════════ -->
+<section id="contact">
+  <div class="section-head">
+    <div class="chip reveal">Parlons de votre projet</div>
+    <h2 class="display reveal d1">CONTACTEZ-<span style="-webkit-text-stroke:2px rgba(62,146,204,.45);color:transparent;">NOUS</span></h2>
+    <p class="reveal d2">Prêt à donner vie à votre projet ? Parlons-en !</p>
+  </div>
+  <div class="contact-grid">
+    <div class="c-info reveal d1">
+      <div class="c-info-title">MARDIGITAL AGENCE</div>
+      <div class="c-items">
+        <div class="c-item">
+          <div class="c-icon"><i class="fas fa-phone"></i></div>
+          <div><div class="c-lbl">Téléphone</div><div class="c-val">+228 70408432 / 97286829</div></div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon"><i class="fas fa-envelope"></i></div>
+          <div><div class="c-lbl">Email</div><div class="c-val"><a href="/cdn-cgi/l/email-protection#701d11021419171904111c1117151e131530171d11191c5e131f1d" style="color:inherit;"><span class="__cf_email__" data-cfemail="6e030f1c0a0709071a0f020f090b000d0b2e09030f0702400d0103">[email&#160;protected]</span></a></div></div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div><div class="c-lbl">Adresse</div><div class="c-val">Togo, Lomé</div></div>
+        </div>
+      </div>
+      <div class="soc-row">
+        <a href="https://www.instagram.com/agencemardigital" target="_blank" class="soc"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.facebook.com/share/16kaNv8KWn/" target="_blank" class="soc"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.tiktok.com/@mardigitalagence" target="_blank" class="soc"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.linkedin.com/in/mario-amevor" target="_blank" class="soc"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://www.behance.net/mariodesign2" target="_blank" class="soc"><i class="fab fa-behance"></i></a>
+      </div>
+    </div>
+    <div class="c-form reveal d2">
+      <!-- Notification succès -->
+      <div id="formSuccess" style="display:none;text-align:center;padding:56px 20px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(62,146,204,.12);border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:28px;color:var(--blue);">
+          <i class="fas fa-check"></i>
+        </div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:10px;">Message envoyé !</div>
+        <p style="color:var(--grey2);font-size:14px;line-height:1.7;">Merci, nous avons bien reçu votre message.<br>Mario vous répondra dans les plus brefs délais.</p>
+        <button onclick="resetContactForm()" style="margin-top:24px;background:none;border:1px solid var(--blue-line);color:var(--grey2);padding:10px 24px;font-size:12px;font-family:'Poppins',sans-serif;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--blue-line)';this.style.color='var(--grey2)'">
+          Envoyer un autre message
+        </button>
+      </div>
+
+      <!-- Formulaire -->
+      <div id="formWrap">
+        <div id="formError" style="display:none;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);padding:12px 16px;margin-bottom:16px;font-size:13px;color:#e74c3c;">
+          <i class="fas fa-exclamation-circle" style="margin-right:8px;"></i>Une erreur est survenue. Réessayez ou contactez-nous directement.
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><label>Nom *</label><input type="text" id="cName" placeholder="Votre nom" required></div>
+          <div class="f-grp"><label>Email *</label><input type="email" id="cEmail" placeholder="Votre email" required></div>
+        </div>
+        <div class="f-grp"><label>Téléphone</label><input type="tel" id="cPhone" placeholder="Votre téléphone WhatsApp"></div>
+        <div class="f-grp">
+          <label>Service souhaité</label>
+          <select id="cService">
+            <option value="">— Choisissez un service —</option>
+            <option>Branding & Design</option>
+            <option>Vidéo & Streaming</option>
+            <option>Formation & Coaching</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="f-grp"><label>Message *</label><textarea id="cMessage" placeholder="Décrivez votre projet..." required></textarea></div>
+        <button id="submitBtn" onclick="submitContact()" class="btn-fill" style="width:100%;border:none;cursor:pointer;">
+          Envoyer le message <i class="fas fa-arrow-right" style="margin-left:8px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <img src="Fr/LOGO2.png" alt="MARDIGITAL AGENCE">
+      <p class="ft-tagline">Construisons ensemble une identité visuelle puissante et mémorable pour votre marque.</p>
+      <div class="soc-row">
+        <a href="https://www.instagram.com/agencemardigital" target="_blank" class="soc"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.facebook.com/share/16kaNv8KWn/" target="_blank" class="soc"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.tiktok.com/@mardigitalagence" target="_blank" class="soc"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.linkedin.com/in/mario-amevor" target="_blank" class="soc"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#hero"><i class="fas fa-chevron-right"></i>Accueil</a></li>
+        <li><a href="#about"><i class="fas fa-chevron-right"></i>À propos</a></li>
+        <li><a href="#services"><i class="fas fa-chevron-right"></i>Services</a></li>
+        <li><a href="#portfolio"><i class="fas fa-chevron-right"></i>Portfolio</a></li>
+        <li><a href="#contact"><i class="fas fa-chevron-right"></i>Contact</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Formations</h4>
+      <ul>
+        <li><a href="#formations"><i class="fas fa-chevron-right"></i>Photoshop</a></li>
+        <li><a href="#formations"><i class="fas fa-chevron-right"></i>Live Streaming Vmix</a></li>
+        <li><a href="#formations"><i class="fas fa-chevron-right"></i>Premiere Pro</a></li>
+        <li><a href="#formations"><i class="fas fa-chevron-right"></i>Illustrator</a></li>
+        <li><a href="#formations"><i class="fas fa-chevron-right"></i>DaVinci Resolve</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+22870408432"><i class="fas fa-phone"></i>+228 70408432</a></li>
+        <li><a href="tel:+22897286829"><i class="fas fa-phone"></i>+228 97286829</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#b3ded2c1d7dad4dac7d2dfd2d4d6ddd0d6f3d4ded2dadf9dd0dcde"><i class="fas fa-envelope"></i><span class="__cf_email__" data-cfemail="2f424e5d4b4648465b4e434e484a414c4a6f48424e4643014c4042">[email&#160;protected]</span></a></li>
+        <li><a href="https://www.behance.net/mariodesign2" target="_blank"><i class="fab fa-behance"></i>Behance</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ft-bottom">
+    <span class="ft-copy">© 2025 MARDIGITAL AGENCE. Tous droits réservés.</span>
+    <!-- Lien admin : invisible dans la page, révèle au survol subtil -->
+    <a href="admin.html" class="admin-link" title="">·</a>
+  </div>
+</footer>
+
+<!-- ════════ BACK TO TOP ════════ -->
+<button id="btt"><i class="fas fa-arrow-up"></i></button>
+
+<!-- ════════ MODAL ACHAT ════════ -->
+<div class="modal-ov" id="modalOv">
+  <div class="modal-box" style="max-width:520px;">
+    <button class="m-x" onclick="closeModal()"><i class="fas fa-times"></i></button>
+
+    <!-- Étape 1 : Instructions paiement -->
+    <div id="mStep1">
+      <div class="m-chip">Commander une formation</div>
+      <div class="m-title" id="mTitle"></div>
+      <p class="m-desc" id="mDesc"></p>
+      <div class="m-price" id="mPrice"></div>
+
+      <!-- Instructions Flooz / T-Money -->
+      <div style="background:rgba(62,146,204,.07);border:1px solid rgba(62,146,204,.2);padding:18px;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:12px;"><i class="fas fa-mobile-alt"></i> Comment payer</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:rgba(10,36,99,.3);padding:12px;text-align:center;border:1px solid var(--blue-line);">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--blue);text-transform:uppercase;margin-bottom:6px;">Flooz (Moov)</div>
+            <div style="font-size:22px;font-weight:800;color:var(--white);" id="mNumFlooz">+228 70408432</div>
+          </div>
+          <div style="background:rgba(10,36,99,.3);padding:12px;text-align:center;border:1px solid var(--blue-line);">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--blue);text-transform:uppercase;margin-bottom:6px;">T-Money (Togocel)</div>
+            <div style="font-size:22px;font-weight:800;color:var(--white);" id="mNumTmoney">+228 97286829</div>
+          </div>
+        </div>
+        <ol style="font-size:12.5px;color:var(--grey2);line-height:2;padding-left:18px;">
+          <li>Envoyez le montant exact au numéro correspondant</li>
+          <li>Notez votre <strong style="color:var(--white);">référence de transaction</strong></li>
+          <li>Remplissez le formulaire ci-dessous</li>
+        </ol>
+      </div>
+
+      <!-- Formulaire commande -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <input type="text"  id="mNom"    placeholder="Votre nom complet *" class="m-inp">
+        <input type="email" id="mEmail"  placeholder="Votre email (pour recevoir le lien) *" class="m-inp">
+        <input type="tel"   id="mPhone"  placeholder="Votre numéro WhatsApp *" class="m-inp">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <select id="mMoyenPay" class="m-inp" style="background:var(--bg-3);color:var(--white);">
+            <option value="">Moyen de paiement *</option>
+            <option value="Flooz (Moov)">Flooz (Moov)</option>
+            <option value="T-Money (Togocel)">T-Money (Togocel)</option>
+          </select>
+          <input type="text" id="mRef" placeholder="Référence transaction *" class="m-inp">
+        </div>
+        <div id="mOrderErr" style="font-size:12px;color:#e74c3c;display:none;padding:8px 12px;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);">
+          <i class="fas fa-exclamation-circle"></i> <span id="mOrderErrMsg"></span>
+        </div>
+        <button class="btn-pay" id="mBtnPay" onclick="submitCommande()">
+          Confirmer ma commande <i class="fas fa-paper-plane" style="margin-left:8px;"></i>
+        </button>
+      </div>
+      <div class="m-secure"><i class="fas fa-shield-alt"></i> Votre accès sera activé après vérification du paiement par Mario</div>
+    </div>
+
+    <!-- Étape 2 : Confirmation -->
+    <div id="mStep2" style="display:none;text-align:center;padding:20px 0;">
+      <div style="width:70px;height:70px;border-radius:50%;background:rgba(46,204,113,.1);border:2px solid #2ecc71;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;color:#2ecc71;">
+        <i class="fas fa-check"></i>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:10px;">Commande enregistrée !</div>
+      <p style="font-size:14px;color:var(--grey2);line-height:1.8;max-width:360px;margin:0 auto 20px;">
+        Mario a reçu votre demande. Dès vérification de votre paiement, vous recevrez le lien de téléchargement sur <strong style="color:var(--white);" id="mConfirmEmail"></strong>
+      </p>
+      <div style="background:rgba(62,146,204,.07);border:1px solid var(--blue-line);padding:14px;font-size:13px;color:var(--grey2);margin-bottom:20px;">
+        <i class="fas fa-clock" style="color:var(--blue);margin-right:6px;"></i> Délai de traitement : <strong style="color:var(--white);">quelques heures</strong>
+      </div>
+      <button onclick="closeModal()" style="background:none;border:1px solid var(--blue-line);color:var(--grey2);padding:10px 28px;font-size:12px;font-family:'Poppins',sans-serif;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--blue-line)'">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── thème : appliqué depuis le réglage admin ── */
+(function(){
+  const theme = localStorage.getItem('mard_theme'); // clé écrite par l'admin
+  if(theme === 'light') document.body.classList.add('light');
+})();
+
+/* ── nav ── */
+const navEl  = document.getElementById('nav');
+const burger = document.getElementById('burger');
+const navList = document.getElementById('navList');
+const btt    = document.getElementById('btt');
+
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 60);
+  btt.classList.toggle('show', window.scrollY > 400);
+});
+
+burger.addEventListener('click', () => {
+  navList.classList.toggle('open');
+  burger.innerHTML = navList.classList.contains('open')
+    ? '<i class="fas fa-times"></i>'
+    : '<i class="fas fa-bars"></i>';
+});
+document.querySelectorAll('.nav-list a').forEach(a => {
+  a.addEventListener('click', () => {
+    navList.classList.remove('open');
+    burger.innerHTML = '<i class="fas fa-bars"></i>';
+  });
+});
+
+/* ── smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const t = document.querySelector(this.getAttribute('href'));
+    if(t) window.scrollTo({ top: t.offsetTop - 72, behavior:'smooth' });
+  });
+});
+
+/* ── reveal ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold:.07 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* ── filters portfolio ── */
+document.querySelectorAll('.f-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+    this.classList.add('on');
+
+    const label  = this.textContent.trim().toLowerCase();
+    const catMap = { 'tout':'tout', 'branding':'branding', 'photo':'photo', 'vidéo':'video', 'design':'design' };
+    const cat    = catMap[label] || label;
+    const mosaic = document.getElementById('portMosaic');
+    const items  = mosaic.querySelectorAll('.pm');
+
+    if (cat === 'tout') {
+      mosaic.classList.remove('filtered');
+      items.forEach(item => item.style.display = '');
+    } else {
+      mosaic.classList.add('filtered');
+      items.forEach(item => {
+        item.style.display = (item.dataset.cat === cat) ? '' : 'none';
+      });
+    }
+  });
+});
+
+/* ── back to top ── */
+btt.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+/* ── modal achat ── */
+let _currentFormation = {};
+function openModal(title, price, desc) {
+  _currentFormation = { title, price, desc };
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mPrice').innerHTML   = price + ' <small>FCFA</small>';
+  document.getElementById('mDesc').textContent  = desc;
+  // reset
+  document.getElementById('mStep1').style.display = '';
+  document.getElementById('mStep2').style.display = 'none';
+  ['mNom','mEmail','mPhone','mRef'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mMoyenPay').value = '';
+  document.getElementById('mOrderErr').style.display = 'none';
+  document.getElementById('mBtnPay').disabled = false;
+  document.getElementById('mBtnPay').innerHTML = 'Confirmer ma commande <i class="fas fa-paper-plane" style="margin-left:8px;"></i>';
+  document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOv').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modalOv').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
+
+async function submitCommande() {
+  const nom    = document.getElementById('mNom').value.trim();
+  const email  = document.getElementById('mEmail').value.trim();
+  const phone  = document.getElementById('mPhone').value.trim();
+  const moyen  = document.getElementById('mMoyenPay').value;
+  const ref    = document.getElementById('mRef').value.trim();
+  const errEl  = document.getElementById('mOrderErr');
+  const errMsg = document.getElementById('mOrderErrMsg');
+
+  const showErr = msg => {
+    errMsg.textContent = msg;
+    errEl.style.display = 'block';
+  };
+
+  if (!nom)   { showErr('Nom requis'); return; }
+  if (!email) { showErr('Email requis'); return; }
+  if (!phone) { showErr('Numéro WhatsApp requis'); return; }
+  if (!moyen) { showErr('Choisissez un moyen de paiement'); return; }
+  if (!ref)   { showErr('Référence de transaction requise'); return; }
+
+  errEl.style.display = 'none';
+  const btn = document.getElementById('mBtnPay');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+  const commande = {
+    id: Date.now().toString(),
+    formation: _currentFormation.title,
+    prix: _currentFormation.price,
+    nom, email, phone,
+    moyen_paiement: moyen,
+    reference: ref,
+    statut: 'en_attente',
+    created_at: new Date().toISOString()
+  };
+
+  let sent = false;
+
+  // 1 — Supabase
+  const sb = getSB();
+  if (sb) {
+    const { error } = await sb.from('commandes').insert([commande]);
+    if (!error) sent = true;
+  }
+
+  // 2 — Formspree (notif email à Mario)
+  try {
+    const fd = new FormData();
+    fd.append('_subject', `🛒 Nouvelle commande — ${commande.formation}`);
+    fd.append('formation', commande.formation);
+    fd.append('prix', commande.prix + ' FCFA');
+    fd.append('nom', nom);
+    fd.append('email', email);
+    fd.append('whatsapp', phone);
+    fd.append('paiement', moyen);
+    fd.append('reference', ref);
+    await fetch('https://formspree.io/f/manbazae', {
+      method:'POST', body: fd, headers:{'Accept':'application/json'}
+    });
+    sent = true;
+  } catch(e) {}
+
+  btn.disabled = false;
+  btn.innerHTML = 'Confirmer ma commande <i class="fas fa-paper-plane" style="margin-left:8px;"></i>';
+
+  if (sent) {
+    document.getElementById('mConfirmEmail').textContent = email;
+    document.getElementById('mStep1').style.display = 'none';
+    document.getElementById('mStep2').style.display = '';
+  } else {
+    showErr('Erreur réseau. Contactez Mario directement sur WhatsApp.');
+  }
+}
+
+/* ══════════════════════════════════════════
+   SUPABASE INIT
+══════════════════════════════════════════ */
+let _sb = null;
+function getSB() {
+  if (_sb) return _sb;
+  const cfg = JSON.parse(localStorage.getItem('mard_cfg') || '{}');
+  if (cfg.url && cfg.key) {
+    _sb = supabase.createClient(cfg.url, cfg.key);
+  }
+  return _sb;
+}
+
+/* ══════════════════════════════════════════
+   CONTACT FORM — Supabase + Formspree fallback
+══════════════════════════════════════════ */
+async function submitContact() {
+  const name    = document.getElementById('cName').value.trim();
+  const email   = document.getElementById('cEmail').value.trim();
+  const phone   = document.getElementById('cPhone').value.trim();
+  const service = document.getElementById('cService').value;
+  const message = document.getElementById('cMessage').value.trim();
+
+  // Validation
+  if (!name || !email || !message) {
+    const btn = document.getElementById('submitBtn');
+    btn.style.background = '#e74c3c';
+    btn.textContent = 'Nom, email et message requis';
+    setTimeout(() => {
+      btn.style.background = '';
+      btn.innerHTML = 'Envoyer le message <i class="fas fa-arrow-right" style="margin-left:8px;"></i>';
+    }, 2500);
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'Envoi en cours... <i class="fas fa-spinner fa-spin"></i>';
+
+  let sent = false;
+
+  // 1 — Supabase (stockage dans la BDD → visible dans l'admin)
+  const sb = getSB();
+  if (sb) {
+    try {
+      const { error } = await sb.from('messages').insert([{
+        id: Date.now().toString(),
+        name, email, phone, service, message,
+        lu: false,
+        created_at: new Date().toISOString()
+      }]);
+      if (!error) sent = true;
+    } catch(e) { /* fallback */ }
+  }
+
+  // 2 — Formspree (toujours envoyé pour recevoir l'email de notification)
+  try {
+    const fd = new FormData();
+    fd.append('name', name);
+    fd.append('email', email);
+    fd.append('phone', phone || '—');
+    fd.append('service', service || '—');
+    fd.append('message', message);
+    fd.append('_subject', '📩 Nouveau message — MARDIGITAL');
+    const res = await fetch('https://formspree.io/f/manbazae', {
+      method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) sent = true;
+  } catch(e) { /* ignore */ }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Envoyer le message <i class="fas fa-arrow-right" style="margin-left:8px;"></i>';
+
+  if (sent) {
+    document.getElementById('formWrap').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  } else {
+    document.getElementById('formError').style.display = 'block';
+    setTimeout(() => document.getElementById('formError').style.display = 'none', 5000);
+  }
+}
+
+function resetContactForm() {
+  document.getElementById('formWrap').style.display = 'block';
+  document.getElementById('formSuccess').style.display = 'none';
+  ['cName','cEmail','cPhone','cMessage'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cService').value = '';
+}
+/* ══════════════════════════════════════════
+   FORMATIONS — chargement dynamique Supabase
+══════════════════════════════════════════ */
+async function loadFormationsSite() {
+  const sb = getSB();
+  if (!sb) return;
+  const { data, error } = await sb.from('formations')
+    .select('*').eq('statut','active').order('created_at',{ascending:false});
+  if (error || !data || !data.length) return;
+  const grid = document.querySelector('.form-grid');
+  if (!grid) return;
+  grid.innerHTML = data.map((f,i) => `
+    <div class="fc reveal d${Math.min(i+1,4)}">
+      <div class="fc-thumb">
+        <img src="${f.image||'Fr/FORMATION.jpg'}" alt="${f.titre}" onerror="this.src='Fr/FORMATION.jpg'">
+        ${i===0?'<div class="fc-badge">Populaire</div>':''}
+        <div class="fc-lock"><i class="fas fa-lock"></i></div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-cat">${f.categorie||''}</div>
+        <div class="fc-title">${f.titre}</div>
+        <p class="fc-desc">${f.description||''}</p>
+        <div class="fc-foot">
+          <div class="fc-price">${Number(f.prix||0).toLocaleString('fr')} <small>FCFA</small></div>
+          <button class="btn-buy" onclick="event.stopPropagation();openModal('${(f.titre||'').replace(/'/g,"\\'")}','${Number(f.prix||0).toLocaleString('fr')}','${(f.description||'').replace(/'/g,"\\'")}')">Acheter</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.reveal:not(.in)').forEach(el => obs.observe(el));
+}
+loadFormationsSite();
+
+/* ══════════════════════════════════════════
+   PORTFOLIO — chargement depuis admin
+   Priorité : Supabase → localStorage → items statiques
+══════════════════════════════════════════ */
+async function loadPortfolioSite() {
+  let items = [];
+  const sb = getSB();
+  if (sb) {
+    const { data, error } = await sb.from('portfolio')
+      .select('*').order('created_at', { ascending: false });
+    if (!error && data && data.length) items = data;
+  }
+  if (!items.length) {
+    const local = JSON.parse(localStorage.getItem('mard_portfolio') || '[]');
+    if (local.length) items = local;
+  }
+  if (!items.length) return;
+
+  const mosaic = document.getElementById('portMosaic');
+  if (!mosaic) return;
+
+  const catMap = {
+    'Branding':'branding','Photo':'photo','Vidéo':'video',
+    'Design':'design','Live Streaming':'video','Autre':'autre'
+  };
+  const imgSafe = src => (src && !src.startsWith('blob:') && src !== '__pending__') ? src : '';
+  const n = items.length;
+
+  let cols, rows, itemStyles;
+  if (n === 1) {
+    cols = '1fr'; rows = '400px';
+    itemStyles = [''];
+  } else if (n === 2) {
+    cols = '1fr 1fr'; rows = '360px';
+    itemStyles = ['',''];
+  } else if (n === 3) {
+    cols = '1.5fr 1fr 1fr'; rows = '360px';
+    itemStyles = ['','',''];
+  } else if (n === 4) {
+    cols = '1.5fr 1fr 1fr'; rows = '260px 240px';
+    itemStyles = [
+      'grid-column:1;grid-row:1/3;',
+      'grid-column:2;grid-row:1;',
+      'grid-column:3;grid-row:1;',
+      'grid-column:2/4;grid-row:2;',
+    ];
+  } else if (n === 5) {
+    cols = '1.6fr 1fr 1fr'; rows = '280px 240px';
+    itemStyles = [
+      'grid-column:1;grid-row:1/3;',
+      'grid-column:2;grid-row:1;',
+      'grid-column:3;grid-row:1;',
+      'grid-column:2;grid-row:2;',
+      'grid-column:3;grid-row:2;',
+    ];
+  } else if (n === 6) {
+    cols = 'repeat(3,1fr)'; rows = '260px 240px';
+    itemStyles = [
+      'grid-column:1/3;grid-row:1;',
+      'grid-column:3;grid-row:1;',
+      'grid-column:1;grid-row:2;',
+      'grid-column:2;grid-row:2;',
+      'grid-column:3;grid-row:2;',
+      'grid-column:1/4;grid-row:3;height:200px;',
+    ];
+  } else {
+    cols = 'repeat(3,1fr)'; rows = 'auto';
+    itemStyles = items.map(() => 'height:220px;');
+  }
+
+  mosaic.style.gridTemplateColumns = cols;
+  mosaic.style.gridTemplateRows    = rows;
+
+  mosaic.innerHTML = items.map((p, i) => {
+    const cat   = catMap[p.categorie] || (p.categorie||'').toLowerCase();
+    const img   = imgSafe(p.image);
+    const style = itemStyles[i] || 'height:220px;';
+    const featured = i === 0 ? '<span class="pm-featured">À la une</span>' : '';
+    return `
+      <div class="pm reveal" data-cat="${cat}" style="${style}">
+        ${img
+          ? `<img src="${img}" alt="${p.titre}" loading="lazy">`
+          : `<div style="width:100%;height:100%;background:var(--bg-2);display:flex;align-items:center;justify-content:center;color:var(--grey);font-size:13px;"><i class="fas fa-image" style="margin-right:8px;color:var(--blue-line);"></i>Image à venir</div>`
+        }
+        ${featured}
+        <div class="pm-overlay">
+          <div class="pm-cat">${p.categorie||''}</div>
+          <div class="pm-name">${p.titre||''}</div>
+          <div class="pm-sub">${p.sous_titre||''}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.querySelectorAll('#portMosaic .reveal:not(.in)').forEach(el => obs.observe(el));
+
+  // Rebrancher les filtres
+  document.querySelectorAll('.f-btn').forEach(btn => {
+    btn.onclick = function() {
+      document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+      this.classList.add('on');
+      const label = this.textContent.trim().toLowerCase();
+      const map   = { 'tout':'tout','branding':'branding','photo':'photo','vidéo':'video','design':'design' };
+      const cat   = map[label] || label;
+      if (cat === 'tout') {
+        mosaic.style.gridTemplateColumns = cols;
+        mosaic.style.gridTemplateRows    = rows;
+        mosaic.querySelectorAll('.pm').forEach((el, i) => {
+          el.style.display = '';
+          const s = itemStyles[i] || 'height:220px;';
+          s.split(';').forEach(rule => {
+            if (!rule.trim()) return;
+            const [prop, val] = rule.split(':');
+            if (prop && val) el.style[prop.trim().replace(/-([a-z])/g, g => g[1].toUpperCase())] = val.trim();
+          });
+        });
+      } else {
+        mosaic.style.gridTemplateColumns = 'repeat(3,1fr)';
+        mosaic.style.gridTemplateRows    = 'auto';
+        mosaic.querySelectorAll('.pm').forEach(el => {
+          const show = el.dataset.cat === cat;
+          el.style.display = show ? '' : 'none';
+          if (show) { el.style.gridColumn=''; el.style.gridRow=''; el.style.height='220px'; }
+        });
+      }
+    };
+  });
+}
+loadPortfolioSite();
+</script>
+</body>
+</html>

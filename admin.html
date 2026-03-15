@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARDIGITAL — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+/* ══ TOKENS — MODE SOMBRE (défaut) ══ */
+:root {
+  --bg:      #0d1124;
+  --bg1:     #111828;
+  --bg2:     #161f34;
+  --bg3:     #1c2840;
+  --navy:    #0A2463;
+  --blue:    #3E92CC;
+  --blue-lt: #62aadb;
+  --line:    rgba(62,146,204,.2);
+  --white:   #f0f4ff;
+  --grey:    #8fa3c8;
+  --grey2:   #b8cae0;
+  --green:   #2ecc71;
+  --red:     #e74c3c;
+  --orange:  #f39c12;
+}
+
+/* ══ MODE CLAIR ══ */
+body.light {
+  --bg:      #f0f4f8;
+  --bg1:     #ffffff;
+  --bg2:     #f5f7fa;
+  --bg3:     #eaeff5;
+  --navy:    #dce8f5;
+  --blue:    #1d6fa4;
+  --blue-lt: #3E92CC;
+  --line:    rgba(29,111,164,.2);
+  --white:   #1a2340;
+  --grey:    #5a6e8a;
+  --grey2:   #3d5270;
+  --green:   #16a34a;
+  --red:     #dc2626;
+  --orange:  #d97706;
+}
+body.light ::-webkit-scrollbar-track { background:var(--bg2); }
+
+/* ══ Toggle bouton ══ */
+.theme-toggle {
+  position:fixed; bottom:24px; right:24px; z-index:999;
+  width:46px; height:46px; border-radius:50%;
+  background:var(--bg1); border:1px solid var(--line);
+  color:var(--grey2); font-size:17px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+  transition:all .25s;
+}
+.theme-toggle:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--white); min-height:100vh; }
+a { text-decoration:none; color:inherit; }
+img { display:block; max-width:100%; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--blue); border-radius:3px; }
+
+/* ══ LOGIN ══ */
+#loginScreen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 40%, rgba(62,146,204,.07), transparent),
+    var(--bg);
+}
+.login-box {
+  width:100%; max-width:420px; padding:48px 44px;
+  background:var(--bg1); border:1px solid var(--line);
+  display:flex; flex-direction:column; align-items:center;
+}
+.login-logo { height:50px; object-fit:contain; margin-bottom:36px; }
+.login-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+.login-sub   { font-size:13px; color:var(--grey); margin-bottom:32px; }
+.login-box input {
+  width:100%; padding:13px 16px; margin-bottom:14px;
+  background:var(--bg3); border:1px solid var(--line);
+  color:var(--white); font-size:14px; font-family:'Poppins',sans-serif;
+  outline:none; transition:border-color .2s;
+}
+.login-box input:focus { border-color:var(--blue); }
+.login-box input::placeholder { color:var(--grey); }
+.login-err { font-size:12px; color:var(--red); margin-bottom:10px; min-height:18px; text-align:center; }
+.btn-login {
+  width:100%; padding:14px; background:var(--blue); color:var(--white);
+  border:none; font-size:13px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; font-family:'Poppins',sans-serif;
+  transition:background .2s;
+}
+.btn-login:hover { background:var(--blue-lt); }
+
+/* ══ DASHBOARD ══ */
+#dashboard { display:none; min-height:100vh; }
+
+/* sidebar */
+.sidebar {
+  position:fixed; top:0; left:0; bottom:0; width:240px;
+  background:var(--bg1); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; z-index:100;
+}
+.sb-logo { padding:24px 24px 20px; border-bottom:1px solid var(--line); }
+.sb-logo img { height:40px; object-fit:contain; }
+.sb-logo span { display:block; font-size:9px; font-weight:700; letter-spacing:3px; color:var(--blue); text-transform:uppercase; margin-top:6px; }
+.sb-nav { flex:1; padding:16px 0; overflow-y:auto; }
+.sb-section { font-size:9px; font-weight:700; letter-spacing:3px; color:var(--grey); text-transform:uppercase; padding:10px 24px 6px; }
+.sb-item {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 24px; cursor:pointer; transition:all .2s;
+  font-size:13px; color:var(--grey2); position:relative;
+}
+.sb-item:hover { background:rgba(62,146,204,.07); color:var(--white); }
+.sb-item.active { background:rgba(62,146,204,.1); color:var(--white); }
+.sb-item.active::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:3px; background:var(--blue);
+}
+.sb-item i { width:18px; text-align:center; font-size:14px; color:var(--blue); }
+.sb-badge {
+  margin-left:auto; background:var(--blue); color:var(--white);
+  font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
+}
+.sb-bottom { padding:16px 24px; border-top:1px solid var(--line); }
+.sb-user { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.sb-avatar { width:34px; height:34px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.sb-user-info { font-size:12px; }
+.sb-user-info strong { display:block; font-size:13px; }
+.sb-user-info span { color:var(--blue); font-size:11px; }
+.btn-logout {
+  width:100%; padding:9px; background:transparent; border:1px solid var(--line);
+  color:var(--grey); font-size:12px; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; cursor:pointer; font-family:'Poppins',sans-serif;
+  transition:all .2s;
+}
+.btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+/* main content */
+.main { margin-left:240px; padding:36px 40px; min-height:100vh; }
+.page { display:none; }
+.page.active { display:block; }
+.page-header { margin-bottom:32px; }
+.page-header h1 { font-size:26px; font-weight:800; letter-spacing:.5px; }
+.page-header p  { font-size:14px; color:var(--grey); margin-top:4px; }
+
+/* ── cards / stats ── */
+.stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+.stat-card {
+  background:var(--bg1); border:1px solid var(--line); padding:22px 24px;
+  display:flex; align-items:center; gap:16px; transition:border-color .2s;
+}
+.stat-card:hover { border-color:rgba(62,146,204,.45); }
+.stat-icon { width:48px; height:48px; border-radius:50%; background:rgba(62,146,204,.1); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--blue); flex-shrink:0; }
+.stat-n { font-size:28px; font-weight:800; line-height:1; }
+.stat-l { font-size:11px; color:var(--grey); margin-top:3px; }
+
+/* ── toolbar ── */
+.toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; gap:12px; flex-wrap:wrap; }
+.toolbar-left { display:flex; gap:10px; flex-wrap:wrap; }
+.search-wrap { position:relative; }
+.search-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--grey); font-size:13px; }
+.search-wrap input { padding:10px 14px 10px 36px; background:var(--bg2); border:1px solid var(--line); color:var(--white); font-size:13px; font-family:'Poppins',sans-serif; outline:none; width:240px; transition:border-color .2s; }
+.search-wrap input:focus { border-color:var(--blue); }
+.search-wrap input::placeholder { color:var(--grey); }
+
+/* ── table ── */
+.table-wrap { background:var(--bg1); border:1px solid var(--line); overflow:hidden; }
+table { width:100%; border-collapse:collapse; }
+thead th { padding:13px 18px; text-align:left; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--grey); background:var(--bg2); border-bottom:1px solid var(--line); white-space:nowrap; }
+tbody td { padding:14px 18px; font-size:13.5px; border-bottom:1px solid rgba(62,146,204,.08); vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover td { background:rgba(62,146,204,.04); }
+.td-img { width:56px; height:40px; object-fit:cover; }
+.td-badge { display:inline-block; padding:3px 10px; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.badge-active { background:rgba(46,204,113,.15); color:var(--green); border:1px solid rgba(46,204,113,.3); }
+.badge-draft  { background:rgba(243,156,18,.12); color:var(--orange); border:1px solid rgba(243,156,18,.3); }
+.td-actions { display:flex; gap:8px; }
+.act-btn {
+  width:32px; height:32px; background:none; border:1px solid var(--line);
+  color:var(--grey); font-size:13px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; transition:all .2s;
+}
+.act-btn:hover { border-color:var(--blue); color:var(--blue); }
+.act-btn.del:hover { border-color:var(--red); color:var(--red); }
+
+/* ── primary button ── */
+.btn-primary {
+  padding:10px 22px; background:var(--blue); color:var(--white);
+  border:none; font-size:12px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; cursor:pointer; font-family:'Poppins',sans-serif;
+  transition:background .2s; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-primary:hover { background:var(--blue-lt); }
+.btn-secondary {
+  padding:10px 22px; background:transparent; color:var(--grey2);
+  border:1px solid var(--line); font-size:12px; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; cursor:pointer; font-family:'Poppins',sans-serif;
+  transition:all .2s; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-secondary:hover { border-color:var(--blue); color:var(--blue); }
+
+/* ── modal / drawer ── */
+.modal-ov {
+  position:fixed; inset:0; background:rgba(0,0,0,.85);
+  backdrop-filter:blur(14px); z-index:500;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.modal-ov.open { display:flex; }
+.modal {
+  background:var(--bg1); border:1px solid var(--line);
+  width:100%; max-width:580px; max-height:90vh; overflow-y:auto;
+  position:relative; padding:36px;
+}
+.modal h2 { font-size:19px; font-weight:700; margin-bottom:6px; }
+.modal-sub { font-size:13px; color:var(--grey); margin-bottom:28px; }
+.m-close { position:absolute; top:16px; right:16px; background:none; border:none; color:var(--grey); font-size:18px; cursor:pointer; transition:color .2s; }
+.m-close:hover { color:var(--blue); }
+
+/* ── form elements ── */
+.f-grp { display:flex; flex-direction:column; gap:7px; margin-bottom:16px; }
+.f-grp label { font-size:10px; font-weight:700; letter-spacing:2.5px; color:var(--grey); text-transform:uppercase; }
+.f-grp input, .f-grp textarea, .f-grp select {
+  background:var(--bg3); border:1px solid var(--line);
+  color:var(--white); padding:12px 14px; font-size:14px;
+  font-family:'Poppins',sans-serif; outline:none; resize:none;
+  transition:border-color .2s;
+}
+.f-grp input:focus, .f-grp textarea:focus, .f-grp select:focus { border-color:var(--blue); }
+.f-grp select option { background:var(--bg3); }
+.f-grp input::placeholder, .f-grp textarea::placeholder { color:var(--grey); }
+.f-grp textarea { min-height:100px; }
+.f-row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.f-actions { display:flex; gap:12px; justify-content:flex-end; margin-top:8px; }
+
+/* file upload zone */
+.upload-zone {
+  border:2px dashed var(--line); padding:28px;
+  text-align:center; cursor:pointer; transition:all .3s;
+  background:var(--bg3);
+}
+.upload-zone:hover, .upload-zone.drag { border-color:var(--blue); background:rgba(62,146,204,.05); }
+.upload-zone i { font-size:28px; color:var(--blue); margin-bottom:10px; display:block; }
+.upload-zone p { font-size:13px; color:var(--grey); }
+.upload-zone span { font-size:11px; color:var(--grey); display:block; margin-top:4px; }
+.upload-zone input { display:none; }
+.upload-preview { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.upload-prev-item { position:relative; width:80px; height:60px; }
+.upload-prev-item img { width:100%; height:100%; object-fit:cover; }
+.upload-prev-item .rm { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--red); color:#fff; font-size:10px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+/* ── messages ── */
+.msg-list { display:flex; flex-direction:column; gap:12px; }
+.msg-card {
+  background:var(--bg1); border:1px solid var(--line); padding:20px 24px;
+  transition:border-color .2s;
+}
+.msg-card.unread { border-left:3px solid var(--blue); }
+.msg-card:hover { border-color:rgba(62,146,204,.45); }
+.msg-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.msg-sender { font-size:15px; font-weight:700; }
+.msg-meta { font-size:12px; color:var(--grey); margin-top:2px; }
+.msg-date { font-size:11px; color:var(--grey); white-space:nowrap; }
+.msg-service { display:inline-block; padding:2px 10px; font-size:10px; font-weight:700; letter-spacing:1px; background:rgba(62,146,204,.12); color:var(--blue); border:1px solid var(--line); margin-bottom:10px; }
+.msg-body { font-size:13.5px; color:var(--grey2); line-height:1.7; }
+.msg-actions { display:flex; gap:8px; margin-top:14px; }
+
+/* ── config grid ── */
+.config-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.config-card { background:var(--bg1); border:1px solid var(--line); padding:28px; }
+.config-card h3 { font-size:15px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+.config-card h3 i { color:var(--blue); font-size:16px; }
+.config-card p { font-size:13px; color:var(--grey); margin-bottom:20px; }
+
+/* ── portfolio grid ── */
+.port-admin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.port-admin-card { background:var(--bg1); border:1px solid var(--line); overflow:hidden; transition:border-color .2s; }
+.port-admin-card:hover { border-color:rgba(62,146,204,.45); }
+.pac-img { width:100%; aspect-ratio:16/9; object-fit:cover; }
+.pac-body { padding:14px 16px; }
+.pac-title { font-size:13px; font-weight:700; margin-bottom:4px; }
+.pac-cat   { font-size:11px; color:var(--blue); letter-spacing:1px; text-transform:uppercase; }
+.pac-actions { display:flex; gap:6px; margin-top:12px; }
+
+/* ── toast ── */
+#toast {
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  padding:14px 22px; font-size:13px; font-weight:600;
+  border-left:3px solid var(--green); background:var(--bg2); border-top:1px solid var(--line); border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+  display:none; align-items:center; gap:10px;
+  animation:slideIn .3s ease;
+}
+#toast.show { display:flex; }
+#toast.err { border-left-color:var(--red); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:none;} }
+
+/* ── supabase config banner ── */
+.config-banner {
+  background:rgba(243,156,18,.08); border:1px solid rgba(243,156,18,.3);
+  padding:14px 18px; margin-bottom:28px;
+  display:flex; align-items:center; gap:12px; font-size:13px; color:var(--orange);
+}
+.config-banner i { font-size:16px; flex-shrink:0; }
+.config-banner a { color:var(--blue); text-decoration:underline; }
+
+/* ── commandes filter ── */
+.f-btn-admin {
+  padding:8px 18px; border:1px solid var(--line); background:none;
+  color:var(--grey2); font-size:11px; font-weight:600; letter-spacing:1.5px;
+  text-transform:uppercase; cursor:pointer; font-family:'Poppins',sans-serif;
+  transition:all .2s;
+}
+.f-btn-admin.on { background:rgba(62,146,204,.12); border-color:var(--blue); color:var(--blue); }
+.f-btn-admin:hover { border-color:var(--blue); color:var(--blue); }
+
+/* ── empty state ── */
+.empty { text-align:center; padding:60px 20px; color:var(--grey); }
+.empty i { font-size:40px; margin-bottom:14px; display:block; opacity:.4; }
+.empty p { font-size:14px; }
+
+/* ── responsive ── */
+@media(max-width:900px){
+  .sidebar { width:60px; }
+  .sb-item span, .sb-section, .sb-logo span, .sb-user-info, .sb-badge, .btn-logout { display:none; }
+  .sb-logo { padding:16px; }
+  .sb-item { padding:14px; justify-content:center; }
+  .sb-item i { width:auto; margin:0; }
+  .sb-bottom { padding:10px; }
+  .sb-avatar { margin:0 auto; }
+  .main { margin-left:60px; padding:24px 20px; }
+  .stat-row { grid-template-columns:1fr 1fr; }
+  .config-grid { grid-template-columns:1fr; }
+  .port-admin-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="Fr/LOGO2.png" alt="MARDIGITAL" class="login-logo">
+    <div class="login-title">Espace Administrateur</div>
+    <div class="login-sub">Accès réservé — MARDIGITAL AGENCE</div>
+    <input type="password" id="pwInput" placeholder="Mot de passe" autocomplete="current-password">
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fas fa-lock" style="margin-right:8px;"></i> Accéder au tableau de bord
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div id="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <img src="Fr/LOGO2.png" alt="MARDIGITAL">
+      <span>Admin Panel</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <div class="sb-item active" onclick="goTo('dash')">
+        <i class="fas fa-th-large"></i><span>Dashboard</span>
+      </div>
+      <div class="sb-section">Contenu</div>
+      <div class="sb-item" onclick="goTo('formations')">
+        <i class="fas fa-graduation-cap"></i><span>Formations</span>
+        <span class="sb-badge" id="badgeFormations">0</span>
+      </div>
+      <div class="sb-item" onclick="goTo('portfolio')">
+        <i class="fas fa-images"></i><span>Portfolio</span>
+        <span class="sb-badge" id="badgePortfolio">0</span>
+      </div>
+      <div class="sb-item" onclick="goTo('fichiers')">
+        <i class="fas fa-folder-open"></i><span>Fichiers formations</span>
+      </div>
+      <div class="sb-section">Gestion</div>
+      <div class="sb-item" onclick="goTo('commandes')">
+        <i class="fas fa-shopping-bag"></i><span>Commandes</span>
+        <span class="sb-badge" id="badgeCommandes" style="background:var(--orange);">0</span>
+      </div>
+      <div class="sb-item" onclick="goTo('messages')">
+        <i class="fas fa-envelope"></i><span>Messages</span>
+        <span class="sb-badge" id="badgeMessages" style="background:var(--red);">0</span>
+      </div>
+      <div class="sb-item" onclick="goTo('config')">
+        <i class="fas fa-cog"></i><span>Configuration</span>
+      </div>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-user">
+        <div class="sb-avatar">M</div>
+        <div class="sb-user-info">
+          <strong>Mario</strong>
+          <span>Administrateur</span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ── Supabase config banner (shown until configured) ── -->
+    <div class="config-banner" id="supabaseBanner">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Supabase n'est pas encore configuré. <a href="#" onclick="goTo('config');return false;">Configurer maintenant →</a> (clé API + URL requises)</span>
+    </div>
+
+    <!-- ═══ PAGE : DASHBOARD ═══ -->
+    <div class="page active" id="page-dash">
+      <div class="page-header">
+        <h1>Tableau de bord</h1>
+        <p>Bienvenue Mario — voici un aperçu de votre activité</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div><div class="stat-n" id="totalFormations">—</div><div class="stat-l">Formations</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-images"></i></div>
+          <div><div class="stat-n" id="totalPortfolio">—</div><div class="stat-l">Réalisations</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+          <div><div class="stat-n" id="totalMessages">—</div><div class="stat-l">Messages reçus</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(243,156,18,.1);border-color:rgba(243,156,18,.3);"><i class="fas fa-shopping-bag" style="color:var(--orange);"></i></div>
+          <div><div class="stat-n" id="totalCommandes">—</div><div class="stat-l">Commandes</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-folder"></i></div>
+          <div><div class="stat-n" id="totalFichiers">—</div><div class="stat-l">Fichiers</div></div>
+        </div>
+      </div>
+      <div style="background:var(--bg1);border:1px solid var(--line);padding:28px;">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">Derniers messages</h3>
+        <div id="dashMessages"><div class="empty"><i class="fas fa-envelope-open"></i><p>Aucun message pour l'instant</p></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : FORMATIONS ═══ -->
+    <div class="page" id="page-formations">
+      <div class="page-header">
+        <h1>Formations</h1>
+        <p>Gérer les formations disponibles sur le site</p>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrap"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher..." id="searchFormation" oninput="filterFormations()"></div>
+        </div>
+        <button class="btn-primary" onclick="openModal('modalFormation')">
+          <i class="fas fa-plus"></i> Nouvelle formation
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Image</th><th>Titre</th><th>Catégorie</th><th>Prix (FCFA)</th><th>Statut</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="tbodyFormations">
+            <tr><td colspan="6"><div class="empty"><i class="fas fa-graduation-cap"></i><p>Aucune formation. Cliquez sur "Nouvelle formation" pour commencer.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : PORTFOLIO ═══ -->
+    <div class="page" id="page-portfolio">
+      <div class="page-header">
+        <h1>Portfolio</h1>
+        <p>Gérer les photos et réalisations affichées sur le site</p>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrap"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher..."></div>
+        </div>
+        <button class="btn-primary" onclick="openModal('modalPortfolio')">
+          <i class="fas fa-plus"></i> Ajouter une réalisation
+        </button>
+      </div>
+      <div class="port-admin-grid" id="portfolioGrid">
+        <div class="empty" style="grid-column:1/-1"><i class="fas fa-images"></i><p>Aucune réalisation. Ajoutez vos premiers projets.</p></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : FICHIERS ═══ -->
+    <div class="page" id="page-fichiers">
+      <div class="page-header">
+        <h1>Fichiers de formations</h1>
+        <p>Uploader les fichiers accessibles après achat (PDF, vidéos, ZIP...)</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn-primary" onclick="openModal('modalFichier')">
+          <i class="fas fa-upload"></i> Uploader un fichier
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Nom du fichier</th><th>Formation liée</th><th>Type</th><th>Taille</th><th>Date</th><th>Lien accès</th><th>Suppr.</th>
+          </tr></thead>
+          <tbody id="tbodyFichiers">
+            <tr><td colspan="6"><div class="empty"><i class="fas fa-folder-open"></i><p>Aucun fichier uploadé.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : COMMANDES ═══ -->
+    <div class="page" id="page-commandes">
+      <div class="page-header">
+        <h1>Commandes reçues</h1>
+        <p>Commandes Flooz / T-Money en attente de validation — accordez l'accès après vérification</p>
+      </div>
+
+      <!-- filtre statut -->
+      <div class="toolbar">
+        <div class="toolbar-left" style="gap:6px;">
+          <button class="f-btn-admin on" onclick="filterCommandes('all',this)">Toutes</button>
+          <button class="f-btn-admin" onclick="filterCommandes('en_attente',this)" style="border-color:var(--orange);color:var(--orange);">En attente</button>
+          <button class="f-btn-admin" onclick="filterCommandes('validee',this)" style="border-color:var(--green);color:var(--green);">Validées</button>
+          <button class="f-btn-admin" onclick="filterCommandes('refusee',this)">Refusées</button>
+        </div>
+        <button class="btn-secondary" onclick="loadCommandes()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Formation</th><th>Client</th><th>Contact</th><th>Paiement</th><th>Référence</th><th>Statut</th><th>Action</th>
+          </tr></thead>
+          <tbody id="tbodyCommandes">
+            <tr><td colspan="8"><div class="empty"><i class="fas fa-shopping-bag"></i><p>Aucune commande pour l'instant.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : MESSAGES ═══ -->
+    <div class="page" id="page-messages">
+      <div class="page-header">
+        <h1>Messages reçus</h1>
+        <p>Tous les messages envoyés via le formulaire de contact</p>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrap"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher..."></div>
+          <button class="btn-secondary"><i class="fas fa-filter"></i> Filtrer</button>
+        </div>
+        <button class="btn-secondary" onclick="loadMessages()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+      </div>
+      <div class="msg-list" id="msgList">
+        <div class="empty"><i class="fas fa-inbox"></i><p>Aucun message pour l'instant.</p></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : CONFIG ═══ -->
+    <div class="page" id="page-config">
+      <div class="page-header">
+        <h1>Configuration</h1>
+        <p>Paramètres Supabase, réseaux sociaux et informations de contact</p>
+      </div>
+      <div class="config-grid">
+
+        <!-- Supabase -->
+        <div class="config-card" style="grid-column:1/-1;">
+          <h3><i class="fas fa-database"></i> Connexion Supabase</h3>
+          <p>Entrez vos clés Supabase — disponibles sur <strong>supabase.com → Settings → API</strong></p>
+          <div class="f-row2">
+            <div class="f-grp"><label>URL du projet</label><input type="text" id="cfgUrl" placeholder="https://xxxx.supabase.co"></div>
+            <div class="f-grp"><label>Clé anonyme (anon key)</label><input type="text" id="cfgKey" placeholder="eyJhbGci..."></div>
+          </div>
+          <div class="f-grp">
+            <label>Clé service_role <span style="color:var(--orange);font-size:10px;font-weight:400;margin-left:6px;">⚠ REQUISE pour upload et lecture messages</span></label>
+            <input type="password" id="cfgServiceKey" placeholder="eyJhbGci... (service_role key)">
+            <span style="font-size:11px;color:var(--grey);margin-top:4px;display:block;">Trouvée dans Supabase → Settings → API → <strong>service_role secret</strong>. Ne jamais partager publiquement.</span>
+          </div>
+          <div class="f-grp"><label>Nouveau mot de passe admin</label><input type="password" id="cfgPwd" placeholder="Laisser vide pour ne pas changer"></div>
+          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="saveConfig()"><i class="fas fa-save"></i> Enregistrer</button>
+            <button class="btn-secondary" onclick="testSupabase()"><i class="fas fa-plug"></i> Tester la connexion</button>
+          </div>
+          <div id="cfgStatus" style="margin-top:12px;font-size:13px;"></div>
+          
+        </div>
+
+        
+
+        <!-- EmailJS — envoi email au client -->
+        <div class="config-card" style="grid-column:1/-1;background:rgba(46,204,113,.03);border-color:rgba(46,204,113,.2);">
+          <h3><i class="fas fa-paper-plane" style="color:var(--green);"></i> EmailJS — Envoi email au client</h3>
+          <p style="margin-bottom:14px;">EmailJS permet d'envoyer l'email d'accès directement au client depuis ton navigateur. Gratuit jusqu'à 200 emails/mois. <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue);">emailjs.com →</a></p>
+          <div class="f-row2">
+            <div class="f-grp"><label>Public Key</label><input type="text" id="cfgEjsKey" placeholder="votre_public_key"></div>
+            <div class="f-grp"><label>Service ID</label><input type="text" id="cfgEjsService" placeholder="service_xxxxxxx"></div>
+          </div>
+          <div class="f-grp"><label>Template ID</label><input type="text" id="cfgEjsTemplate" placeholder="template_xxxxxxx"></div>
+          <button class="btn-primary" onclick="saveEmailJS()"><i class="fas fa-save"></i> Enregistrer EmailJS</button>
+          <div id="ejsStatus" style="margin-top:10px;font-size:12px;"></div>
+        </div>
+
+        <!-- Réseaux sociaux -->
+        <div class="config-card">
+          <h3><i class="fas fa-share-alt"></i> Réseaux sociaux</h3>
+          <p>URLs affichées sur le site</p>
+          <div class="f-grp"><label><i class="fab fa-instagram"></i> Instagram</label><input type="text" id="cfgIg" placeholder="https://instagram.com/..."></div>
+          <div class="f-grp"><label><i class="fab fa-facebook-f"></i> Facebook</label><input type="text" id="cfgFb" placeholder="https://facebook.com/..."></div>
+          <div class="f-grp"><label><i class="fab fa-tiktok"></i> TikTok</label><input type="text" id="cfgTk" placeholder="https://tiktok.com/..."></div>
+          <div class="f-grp"><label><i class="fab fa-linkedin-in"></i> LinkedIn</label><input type="text" id="cfgLi" placeholder="https://linkedin.com/..."></div>
+          <div class="f-grp"><label><i class="fab fa-behance"></i> Behance</label><input type="text" id="cfgBe" placeholder="https://behance.net/..."></div>
+          <button class="btn-primary" onclick="saveSocials()"><i class="fas fa-save"></i> Enregistrer</button>
+        </div>
+
+        <!-- Infos contact -->
+        <div class="config-card">
+          <h3><i class="fas fa-address-card"></i> Informations de contact</h3>
+          <p>Affiché dans la section contact</p>
+          <div class="f-grp"><label>Téléphone 1</label><input type="text" id="cfgTel1" placeholder="+228 70408432"></div>
+          <div class="f-grp"><label>Téléphone 2</label><input type="text" id="cfgTel2" placeholder="+228 97286829"></div>
+          <div class="f-grp"><label>Email</label><input type="email" id="cfgEmail" placeholder="mardigitalagence@gmail.com"></div>
+          <div class="f-grp"><label>Adresse</label><input type="text" id="cfgAddr" placeholder="Togo, Lomé"></div>
+          <button class="btn-primary" onclick="saveContact()"><i class="fas fa-save"></i> Enregistrer</button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Modal : Formation -->
+<div class="modal-ov" id="modalFormation">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalFormation')"><i class="fas fa-times"></i></button>
+    <h2 id="modalFormationTitle">Nouvelle formation</h2>
+    <div class="modal-sub">Remplissez les informations de la formation</div>
+    <input type="hidden" id="fId">
+    <div class="f-row2">
+      <div class="f-grp" style="grid-column:1/-1;"><label>Titre</label><input type="text" id="fTitre" placeholder="ex : Maîtriser Photoshop"></div>
+    </div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Catégorie</label>
+        <select id="fCat">
+          <option>Design Graphique</option>
+          <option>Production Vidéo</option>
+          <option>Montage Vidéo</option>
+          <option>Live Streaming</option>
+          <option>Formation générale</option>
+        </select>
+      </div>
+      <div class="f-grp"><label>Prix (FCFA)</label><input type="number" id="fPrix" placeholder="25000"></div>
+    </div>
+    <div class="f-grp"><label>Description courte</label><textarea id="fDesc" placeholder="Description affichée sur la carte formation..."></textarea></div>
+    <div class="f-grp"><label>Image (URL ou chemin local)</label><input type="text" id="fImg" placeholder="Fr/FORMATION.jpg ou https://..."></div>
+    <div class="f-grp">
+      <label>Ou uploader une image</label>
+      <div class="upload-zone" onclick="document.getElementById('fImgFile').click()" id="fImgZone">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Cliquer pour choisir une image</p>
+        <span>JPG, PNG, WEBP — max 5 Mo</span>
+        <input type="file" id="fImgFile" accept="image/*" onchange="handleImgUpload(this,'fImg','fImgZone')">
+      </div>
+    </div>
+    <div class="f-grp"><label>Statut</label>
+      <select id="fStatut">
+        <option value="active">Actif (visible sur le site)</option>
+        <option value="draft">Brouillon (masqué)</option>
+      </select>
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalFormation')">Annuler</button>
+      <button class="btn-primary" onclick="saveFormation()"><i class="fas fa-save"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Portfolio -->
+<div class="modal-ov" id="modalPortfolio">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalPortfolio')"><i class="fas fa-times"></i></button>
+    <h2>Ajouter une réalisation</h2>
+    <div class="modal-sub">Photo ou projet à afficher dans le portfolio</div>
+    <input type="hidden" id="pId">
+    <div class="f-row2">
+      <div class="f-grp" style="grid-column:1/-1;"><label>Titre du projet</label><input type="text" id="pTitre" placeholder="ex : Campagne Branding"></div>
+    </div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Catégorie</label>
+        <select id="pCat">
+          <option>Branding</option>
+          <option>Photo</option>
+          <option>Vidéo</option>
+          <option>Design</option>
+          <option>Live Streaming</option>
+        </select>
+      </div>
+      <div class="f-grp"><label>Sous-titre</label><input type="text" id="pSub" placeholder="ex : Identité visuelle complète"></div>
+    </div>
+    <div class="f-grp"><label>Image (chemin local)</label><input type="text" id="pImg" placeholder="Fr/ARTISTE ENSEMBLE.jpg"></div>
+    <div class="f-grp">
+      <label>Ou uploader une image</label>
+      <div class="upload-zone" onclick="document.getElementById('pFile').click()" id="pDropZone">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Cliquer pour choisir ou glisser-déposer</p>
+        <span>JPG, PNG, WEBP — max 5 Mo</span>
+        <input type="file" id="pFile" accept="image/*" onchange="handleImgUpload(this,'pImg','pDropZone')">
+      </div>
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalPortfolio')">Annuler</button>
+      <button class="btn-primary" onclick="savePortfolio()"><i class="fas fa-save"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Fichier -->
+<div class="modal-ov" id="modalFichier">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalFichier')"><i class="fas fa-times"></i></button>
+    <h2>Uploader un fichier de formation</h2>
+    <div class="modal-sub">Fichier accessible après achat de la formation</div>
+    <div class="f-grp"><label>Nom du fichier</label><input type="text" id="fichNom" placeholder="ex : Cours Photoshop Complet.pdf"></div>
+    <div class="f-grp"><label>Formation liée</label>
+      <select id="fichFormation"><option>— Choisir une formation —</option></select>
+    </div>
+    <div class="f-grp">
+      <label>Fichier (depuis votre ordinateur)</label>
+      <div class="upload-zone" onclick="document.getElementById('fichFile').click()" id="fichDropZone">
+        <i class="fas fa-file-upload"></i>
+        <p>Cliquer pour choisir un fichier</p>
+        <span>PDF, MP4, ZIP, RAR — max 500 Mo</span>
+        <input type="file" id="fichFile" onchange="handleFileUpload(this)">
+      </div>
+      <div id="fichPreview" style="margin-top:10px;font-size:13px;color:var(--grey2);"></div>
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalFichier')">Annuler</button>
+      <button class="btn-primary" onclick="saveFichier()"><i class="fas fa-upload"></i> Uploader</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Accorder accès -->
+<div class="modal-ov" id="modalAcces">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalAcces')"><i class="fas fa-times"></i></button>
+    <h2>Accorder l'accès</h2>
+    <div class="modal-sub" id="accesSubtitle">Vérifiez le paiement puis accordez l'accès au client</div>
+
+    <input type="hidden" id="accesCommandeId">
+
+    <!-- Résumé commande -->
+    <div id="accesResume" style="background:var(--bg3);border:1px solid var(--line);padding:16px 18px;margin-bottom:20px;font-size:13px;line-height:1.9;"></div>
+
+    <!-- Choisir le fichier à donner -->
+    <div class="f-grp">
+      <label>Fichier à envoyer au client</label>
+      <select id="accesFichier">
+        <option value="">— Choisir le fichier de la formation —</option>
+      </select>
+    </div>
+
+    <!-- OU lien manuel -->
+    <div class="f-grp">
+      <label>Ou entrer un lien manuellement</label>
+      <input type="text" id="accesLien" placeholder="https://... (Google Drive, Dropbox, lien direct...)">
+    </div>
+
+    <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);padding:12px 16px;font-size:12px;color:var(--grey2);margin-bottom:16px;line-height:1.7;">
+      <i class="fas fa-info-circle" style="color:var(--green);margin-right:6px;"></i>
+      Le lien sera envoyé par email à l'adresse du client via Formspree. Assurez-vous que le lien est correct avant de valider.
+    </div>
+
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="refuserCommande()"><i class="fas fa-times"></i> Refuser</button>
+      <button class="btn-primary" onclick="accorderAcces()" style="background:var(--green);border-color:var(--green);"><i class="fas fa-check"></i> Valider & Envoyer le lien</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message detail modal -->
+<div class="modal-ov" id="modalMessage">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalMessage')"><i class="fas fa-times"></i></button>
+    <h2 id="msgDetailName"></h2>
+    <div class="modal-sub" id="msgDetailMeta"></div>
+    <div class="msg-service" id="msgDetailService"></div>
+    <div style="background:var(--bg3);padding:18px;font-size:14px;line-height:1.8;color:var(--grey2);" id="msgDetailBody"></div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalMessage')">Fermer</button>
+      <button class="btn-primary" id="replyBtn"><i class="fas fa-reply"></i> Répondre par email</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<!-- Bouton mode clair/sombre -->
+<button class="theme-toggle" id="themeToggle" title="Changer le thème" onclick="toggleTheme()">
+  <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG & STATE
+// ══════════════════════════════════════════
+const ADMIN_KEY = 'mard_admin';
+let supabase_client = null;
+
+// ── Thème : appliquer dès le chargement ──
+(function() {
+  const saved = localStorage.getItem('mard_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    const icon = document.getElementById('themeIcon');
+    if (icon) { icon.className = 'fas fa-sun'; }
+  }
+})();
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  const icon    = document.getElementById('themeIcon');
+  icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+  localStorage.setItem('mard_theme', isLight ? 'light' : 'dark');
+  toast(isLight ? '☀️ Mode clair activé' : '🌙 Mode sombre activé');
+}
+
+// load saved config
+const cfg = JSON.parse(localStorage.getItem('mard_cfg') || '{}');
+
+const DEFAULT_PWD = 'mardigital2025'; // mot de passe par défaut
+
+function getPassword() {
+  return cfg.pwd || DEFAULT_PWD;
+}
+
+// ══ LOGIN ══
+function doLogin() {
+  const val = document.getElementById('pwInput').value.trim();
+  if (!val) { showErr('Entrez votre mot de passe.'); return; }
+  if (val === getPassword()) {
+    sessionStorage.setItem(ADMIN_KEY, '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    initDashboard();
+  } else {
+    showErr('Mot de passe incorrect.');
+    document.getElementById('pwInput').value = '';
+  }
+}
+function showErr(msg) {
+  const el = document.getElementById('loginErr');
+  el.textContent = msg;
+  setTimeout(()=>el.textContent='', 3000);
+}
+function doLogout() {
+  sessionStorage.removeItem(ADMIN_KEY);
+  window.location.href = 'index.html';
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// auto-login if session exists
+if (sessionStorage.getItem(ADMIN_KEY)) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  initDashboard();
+}
+
+// ══ SUPABASE INIT ══
+// L'admin utilise la clé service_role pour bypasser RLS complètement
+function initSupabase() {
+  if (!cfg.url) return false;
+  const key = cfg.serviceKey || cfg.key; // service_role en priorité
+  if (!key) return false;
+  try {
+    supabase_client = supabase.createClient(cfg.url, key, {
+      auth: { persistSession: false }
+    });
+    document.getElementById('supabaseBanner').style.display = 'none';
+    return true;
+  } catch(e) { return false; }
+}
+
+// ══ NAVIGATION ══
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  event.currentTarget?.classList.add('active');
+
+  if (page==='formations') loadFormations();
+  if (page==='portfolio')  loadPortfolio();
+  if (page==='messages')   loadMessages();
+  if (page==='fichiers')   loadFichiers();
+  if (page==='commandes')  loadCommandes();
+  if (page==='config')     loadConfig();
+}
+
+// ══ DASHBOARD INIT ══
+async function initDashboard() {
+  initSupabase();
+  loadConfig();
+  await Promise.all([loadFormations(true), loadPortfolio(true), loadMessages(true), loadFichiers(true), loadCommandes(true)]);
+}
+
+// ══════════════════════════════════════════
+//  FORMATIONS
+// ══════════════════════════════════════════
+let formations = JSON.parse(localStorage.getItem('mard_formations') || '[]');
+
+function saveFormationsLocal() {
+  localStorage.setItem('mard_formations', JSON.stringify(formations));
+  document.getElementById('badgeFormations').textContent = formations.length;
+  document.getElementById('totalFormations').textContent = formations.length;
+  // update fichier dropdown
+  const sel = document.getElementById('fichFormation');
+  sel.innerHTML = '<option>— Choisir une formation —</option>';
+  formations.forEach(f => { const o = document.createElement('option'); o.textContent = f.titre; sel.appendChild(o); });
+}
+
+async function loadFormations(silent=false) {
+  if (!silent) { /* show loading */ }
+  if (supabase_client) {
+    const { data, error } = await supabase_client.from('formations').select('*').order('created_at', {ascending:false});
+    if (!error && data) { formations = data; localStorage.setItem('mard_formations', JSON.stringify(data)); }
+  }
+  renderFormations(formations);
+  saveFormationsLocal();
+}
+
+function renderFormations(list) {
+  const tbody = document.getElementById('tbodyFormations');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><i class="fas fa-graduation-cap"></i><p>Aucune formation.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(f => `
+    <tr>
+      <td><img class="td-img" src="${f.image||'Fr/FORMATION.jpg'}" alt="${f.titre}" onerror="this.src='Fr/FORMATION.jpg'"></td>
+      <td><strong>${f.titre}</strong></td>
+      <td><span style="font-size:11px;color:var(--blue);letter-spacing:1px;text-transform:uppercase;">${f.categorie||''}</span></td>
+      <td><strong style="color:var(--blue);">${Number(f.prix||0).toLocaleString('fr')}</strong> FCFA</td>
+      <td><span class="td-badge ${f.statut==='active'?'badge-active':'badge-draft'}">${f.statut==='active'?'Actif':'Brouillon'}</span></td>
+      <td><div class="td-actions">
+        <button class="act-btn" title="Modifier" onclick="editFormation('${f.id}')"><i class="fas fa-pen"></i></button>
+        <button class="act-btn del" title="Supprimer" onclick="deleteFormation('${f.id}')"><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function filterFormations() {
+  const q = document.getElementById('searchFormation').value.toLowerCase();
+  renderFormations(formations.filter(f => f.titre.toLowerCase().includes(q)));
+}
+
+function editFormation(id) {
+  const f = formations.find(x => x.id==id);
+  if (!f) return;
+  document.getElementById('fId').value = f.id;
+  document.getElementById('fTitre').value = f.titre;
+  document.getElementById('fCat').value = f.categorie;
+  document.getElementById('fPrix').value = f.prix;
+  document.getElementById('fDesc').value = f.description||'';
+  document.getElementById('fImg').value = f.image||'';
+  document.getElementById('fStatut').value = f.statut||'active';
+  document.getElementById('modalFormationTitle').textContent = 'Modifier la formation';
+  openModal('modalFormation');
+}
+
+async function saveFormation() {
+  const id = document.getElementById('fId').value;
+  const data = {
+    titre:       document.getElementById('fTitre').value.trim(),
+    categorie:   document.getElementById('fCat').value,
+    prix:        parseInt(document.getElementById('fPrix').value)||0,
+    description: document.getElementById('fDesc').value.trim(),
+    image:       document.getElementById('fImg').value.trim(),
+    statut:      document.getElementById('fStatut').value,
+  };
+  if (!data.titre) { toast('Titre requis', true); return; }
+
+  const btn = document.querySelector('#modalFormation .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+  // Upload image si fichier en attente
+  if (_pendingFiles['fImgFile']) {
+    const uploaded = await uploadImage('fImgFile', 'portfolio-images');
+    if (uploaded) data.image = uploaded;
+  }
+
+  if (supabase_client) {
+    if (id) {
+      await supabase_client.from('formations').update(data).eq('id', id);
+    } else {
+      data.id = Date.now().toString();
+      data.created_at = new Date().toISOString();
+      await supabase_client.from('formations').insert([data]);
+    }
+  } else {
+    if (id) {
+      const idx = formations.findIndex(x=>x.id==id);
+      if (idx>-1) formations[idx] = {...formations[idx],...data};
+    } else {
+      data.id = Date.now().toString();
+      data.created_at = new Date().toISOString();
+      formations.unshift(data);
+    }
+  }
+
+  saveFormationsLocal();
+  renderFormations(formations);
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+  closeModal('modalFormation');
+  resetFormationForm();
+  toast(id ? 'Formation mise à jour !' : 'Formation ajoutée !');
+}
+
+async function deleteFormation(id) {
+  if (!confirm('Supprimer cette formation ?')) return;
+  if (supabase_client) await supabase_client.from('formations').delete().eq('id', id);
+  formations = formations.filter(f=>f.id!=id);
+  saveFormationsLocal();
+  renderFormations(formations);
+  toast('Formation supprimée.');
+}
+
+function resetFormationForm() {
+  ['fId','fTitre','fPrix','fDesc','fImg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fStatut').value='active';
+  document.getElementById('modalFormationTitle').textContent='Nouvelle formation';
+}
+
+// ══════════════════════════════════════════
+//  PORTFOLIO
+// ══════════════════════════════════════════
+let portfolio = JSON.parse(localStorage.getItem('mard_portfolio') || '[]');
+
+function savePortfolioLocal() {
+  localStorage.setItem('mard_portfolio', JSON.stringify(portfolio));
+  document.getElementById('badgePortfolio').textContent = portfolio.length;
+  document.getElementById('totalPortfolio').textContent = portfolio.length;
+}
+
+async function loadPortfolio(silent=false) {
+  if (supabase_client) {
+    const { data, error } = await supabase_client.from('portfolio').select('*').order('created_at', {ascending:false});
+    if (!error && data) { portfolio = data; localStorage.setItem('mard_portfolio', JSON.stringify(data)); }
+  }
+  renderPortfolio(portfolio);
+  savePortfolioLocal();
+}
+
+function renderPortfolio(list) {
+  const grid = document.getElementById('portfolioGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><i class="fas fa-images"></i><p>Aucune réalisation. Ajoutez vos premiers projets.</p></div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    // blob: URLs sont temporaires — invalides après rechargement
+    const imgSrc = p.image && !p.image.startsWith('blob:') && p.image !== '__pending__' ? p.image : '';
+    const imgHtml = imgSrc
+      ? `<img class="pac-img" src="${imgSrc}" alt="${p.titre}" onerror="this.parentElement.innerHTML='<div style=\\'background:var(--bg3);height:140px;display:flex;align-items:center;justify-content:center;color:var(--grey);font-size:12px;\\'>Image introuvable</div>'">`
+      : `<div style="background:var(--bg3);height:140px;display:flex;align-items:center;justify-content:center;color:var(--grey);font-size:12px;"><i class="fas fa-image" style="margin-right:8px;color:var(--blue);"></i>Pas d'image</div>`;
+    return `
+      <div class="port-admin-card">
+        <div style="position:relative;">
+          ${imgHtml}
+          <div style="position:absolute;top:8px;right:8px;display:flex;gap:6px;">
+            <button class="act-btn" style="background:rgba(13,17,36,.85);" title="Modifier" onclick="editPortfolio('${p.id}')"><i class="fas fa-pen"></i></button>
+            <button class="act-btn del" style="background:rgba(13,17,36,.85);" title="Supprimer" onclick="deletePortfolio('${p.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="pac-body">
+          <div class="pac-cat">${p.categorie||''}</div>
+          <div class="pac-title">${p.titre}</div>
+          <div style="font-size:12px;color:var(--grey);margin-top:2px;">${p.sous_titre||''}</div>
+          ${imgSrc ? '' : '<div style="font-size:11px;color:var(--orange);margin-top:6px;"><i class="fas fa-exclamation-triangle"></i> Ré-uploadez une image</div>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function editPortfolio(id) {
+  const p = portfolio.find(x => x.id == id);
+  if (!p) return;
+  document.getElementById('pId').value       = p.id;
+  document.getElementById('pTitre').value    = p.titre;
+  document.getElementById('pCat').value      = p.categorie || 'Branding';
+  document.getElementById('pSub').value      = p.sous_titre || '';
+  document.getElementById('pImg').value      = p.image || '';
+  // reset upload zone
+  document.getElementById('pDropZone').innerHTML = `
+    <i class="fas fa-cloud-upload-alt"></i>
+    <p>Cliquer pour choisir ou glisser-déposer</p>
+    <span>JPG, PNG, WEBP — max 5 Mo</span>
+    <input type="file" id="pFile" accept="image/*" onchange="handleImgUpload(this,'pImg','pDropZone')">
+  `;
+  document.querySelector('#modalPortfolio h2').textContent = 'Modifier la réalisation';
+  openModal('modalPortfolio');
+}
+
+async function savePortfolio() {
+  const id    = document.getElementById('pId').value;
+  const titre = document.getElementById('pTitre').value.trim();
+  const cat   = document.getElementById('pCat').value;
+  const sub   = document.getElementById('pSub').value.trim();
+  let   img   = document.getElementById('pImg').value.trim();
+
+  if (!titre) { toast('Titre requis', true); return; }
+
+  const btn = document.querySelector('#modalPortfolio .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+  // Upload image si fichier en attente
+  if (_pendingFiles['pFile']) {
+    const uploaded = await uploadImage('pFile', 'portfolio-images');
+    if (uploaded) img = uploaded;
+    else { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Enregistrer'; return; }
+  }
+
+  const data = { titre, categorie: cat, sous_titre: sub, image: img };
+
+  if (supabase_client) {
+    if (id) {
+      await supabase_client.from('portfolio').update(data).eq('id', id);
+      const idx = portfolio.findIndex(x=>x.id==id);
+      if (idx>-1) portfolio[idx] = {...portfolio[idx], ...data};
+    } else {
+      data.id = Date.now().toString();
+      data.created_at = new Date().toISOString();
+      const { error } = await supabase_client.from('portfolio').insert([data]);
+      if (!error) portfolio.unshift(data);
+    }
+  } else {
+    if (id) {
+      const idx = portfolio.findIndex(x=>x.id==id);
+      if (idx>-1) portfolio[idx] = {...portfolio[idx], ...data};
+    } else {
+      data.id = Date.now().toString();
+      data.created_at = new Date().toISOString();
+      portfolio.unshift(data);
+    }
+  }
+
+  savePortfolioLocal();
+  renderPortfolio(portfolio);
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+  closeModal('modalPortfolio');
+  resetPortfolioForm();
+  toast(id ? 'Réalisation mise à jour !' : 'Réalisation ajoutée !');
+}
+
+function resetPortfolioForm() {
+  ['pId','pTitre','pSub','pImg'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelector('#modalPortfolio h2').textContent = 'Ajouter une réalisation';
+}
+
+async function deletePortfolio(id) {
+  if (!confirm('Supprimer cette réalisation ?')) return;
+  if (supabase_client) await supabase_client.from('portfolio').delete().eq('id', id);
+  portfolio = portfolio.filter(p=>p.id!=id);
+  savePortfolioLocal();
+  renderPortfolio(portfolio);
+  toast('Réalisation supprimée.');
+}
+
+// ── stockage des fichiers sélectionnés en mémoire ──
+const _pendingFiles = {};
+
+function handleImgUpload(input, targetId, zoneId) {
+  const file = input.files[0];
+  if (!file) return;
+  _pendingFiles[input.id] = file;
+  const url  = URL.createObjectURL(file);
+  const zone = document.getElementById(zoneId);
+  zone.innerHTML = `
+    <img src="${url}" style="max-height:80px;margin:0 auto 8px;display:block;object-fit:cover;border-radius:2px;">
+    <p style="color:var(--green);font-size:12px;margin-top:4px;"><i class="fas fa-check-circle"></i> ${file.name}</p>
+    <span style="font-size:11px;color:var(--grey);">Image sélectionnée</span>
+    <input type="file" id="${input.id}" accept="image/*" onchange="handleImgUpload(this,'${targetId}','${zoneId}')" style="display:none;">
+  `;
+  // On ne met PAS la blob URL dans le champ — on garde le fichier dans _pendingFiles
+  document.getElementById(targetId).value = '__pending__';
+}
+
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  _pendingFiles['fichFile'] = file;
+  const size = file.size > 1024*1024
+    ? (file.size/1024/1024).toFixed(1)+' Mo'
+    : (file.size/1024).toFixed(0)+' Ko';
+  const zone = document.getElementById('fichDropZone');
+  zone.innerHTML = `
+    <i class="fas fa-check-circle" style="color:var(--green);font-size:28px;"></i>
+    <p style="margin-top:8px;font-weight:600;">${file.name}</p>
+    <span>${size} — prêt à être uploadé</span>
+    <input type="file" id="fichFile" onchange="handleFileUpload(this)" style="display:none;">
+  `;
+  document.getElementById('fichNom').value = document.getElementById('fichNom').value || file.name;
+  document.getElementById('fichPreview').textContent = '';
+}
+
+// ── Convertir image en base64 (stockage local) ──
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    // Redimensionner si trop grande (max 800px) pour ne pas saturer localStorage
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW = 800;
+        const ratio = Math.min(maxW / img.width, maxW / img.height, 1);
+        canvas.width  = img.width  * ratio;
+        canvas.height = img.height * ratio;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Upload image : Supabase Storage OU base64 fallback ──
+async function uploadImage(fileKey, bucket) {
+  const file = _pendingFiles[fileKey];
+  if (!file) return null;
+
+  // Essayer Supabase Storage d'abord
+  if (supabase_client) {
+    const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const { data, error } = await supabase_client.storage
+      .from(bucket).upload(path, file, { upsert: true });
+    if (!error) {
+      delete _pendingFiles[fileKey];
+      const { data: pub } = supabase_client.storage.from(bucket).getPublicUrl(data.path);
+      return pub.publicUrl;
+    }
+    // Si le bucket n'existe pas, on passe en base64
+    if (!error.message.includes('Bucket not found')) {
+      toast('Erreur upload : ' + error.message, true);
+      return null;
+    }
+  }
+
+  // Fallback : base64 (fonctionne sans Supabase)
+  try {
+    const b64 = await fileToBase64(file);
+    delete _pendingFiles[fileKey];
+    return b64;
+  } catch(e) {
+    toast('Erreur conversion image', true);
+    return null;
+  }
+}
+
+async function uploadFile(fileKey, bucket) {
+  const file = _pendingFiles[fileKey];
+  if (!file) return null;
+  if (!supabase_client) {
+    toast('Supabase requis pour uploader des fichiers', true); return null;
+  }
+  const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+  const { data, error } = await supabase_client.storage
+    .from(bucket).upload(path, file, { upsert: false });
+  if (error) {
+    toast(error.message.includes('Bucket not found')
+      ? `Crée le bucket "${bucket}" dans Supabase → Storage`
+      : 'Erreur upload : ' + error.message, true);
+    return null;
+  }
+  delete _pendingFiles[fileKey];
+  const { data: pub } = supabase_client.storage.from(bucket).getPublicUrl(data.path);
+  const size = file.size > 1024*1024
+    ? (file.size/1024/1024).toFixed(1)+' Mo'
+    : (file.size/1024).toFixed(0)+' Ko';
+  return { url: pub.publicUrl, size };
+}
+
+// ══════════════════════════════════════════
+//  FICHIERS
+// ══════════════════════════════════════════
+let fichiers = JSON.parse(localStorage.getItem('mard_fichiers') || '[]');
+
+function saveFichiersLocal() {
+  localStorage.setItem('mard_fichiers', JSON.stringify(fichiers));
+  document.getElementById('totalFichiers').textContent = fichiers.length;
+}
+
+async function loadFichiers(silent=false) {
+  if (supabase_client) {
+    const { data, error } = await supabase_client.from('fichiers').select('*').order('created_at', {ascending:false});
+    if (!error && data) { fichiers = data; localStorage.setItem('mard_fichiers', JSON.stringify(data)); }
+  }
+  renderFichiers(fichiers);
+  saveFichiersLocal();
+}
+
+function renderFichiers(list) {
+  const tbody = document.getElementById('tbodyFichiers');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><i class="fas fa-folder-open"></i><p>Aucun fichier.</p></div></td></tr>';
+    return;
+  }
+  const icons = {pdf:'fa-file-pdf',mp4:'fa-file-video',mov:'fa-file-video',zip:'fa-file-archive',rar:'fa-file-archive',docx:'fa-file-word',pptx:'fa-file-powerpoint'};
+  tbody.innerHTML = list.map(f => {
+    const ext  = (f.nom||'').split('.').pop().toLowerCase();
+    const icon = icons[ext] || 'fa-file';
+    return `
+      <tr>
+        <td><i class="fas ${icon}" style="color:var(--blue);margin-right:8px;"></i><strong>${f.nom||''}</strong></td>
+        <td><span style="font-size:12px;color:var(--blue);">${f.formation||'—'}</span></td>
+        <td style="text-transform:uppercase;font-size:11px;color:var(--grey);">${ext}</td>
+        <td style="color:var(--grey);">${f.taille||'—'}</td>
+        <td style="color:var(--grey);">${f.created_at ? new Date(f.created_at).toLocaleDateString('fr') : '—'}</td>
+        <td>
+          ${f.url
+            ? `<div style="display:flex;gap:6px;">
+                <button class="act-btn" title="Copier le lien d'accès" onclick="copyLink('${f.url}')"><i class="fas fa-copy"></i></button>
+                <a href="${f.url}" target="_blank" class="act-btn" title="Ouvrir le fichier" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fas fa-external-link-alt"></i></a>
+               </div>`
+            : '<span style="font-size:11px;color:var(--grey);">—</span>'
+          }
+        </td>
+        <td>
+          <button class="act-btn del" onclick="deleteFichier('${f.id}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url)
+    .then(() => toast('✓ Lien copié ! Tu peux l\'envoyer à l\'acheteur.'))
+    .catch(() => {
+      prompt('Copie ce lien manuellement :', url);
+    });
+}
+
+async function saveFichier() {
+  const nom       = document.getElementById('fichNom').value.trim();
+  const formation = document.getElementById('fichFormation').value;
+
+  if (!nom) { toast('Nom du fichier requis', true); return; }
+  if (!_pendingFiles['fichFile']) { toast('Sélectionnez un fichier', true); return; }
+  if (!supabase_client) { toast('Supabase non configuré', true); return; }
+
+  const btn = document.querySelector('#modalFichier .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload en cours...';
+
+  const result = await uploadFile('fichFile', 'formations-files');
+  if (!result) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> Uploader';
+    return;
+  }
+
+  const record = {
+    id: Date.now().toString(),
+    nom, formation,
+    taille: result.size,
+    url: result.url,
+    created_at: new Date().toISOString()
+  };
+
+  const { error } = await supabase_client.from('fichiers').insert([record]);
+  if (error) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> Uploader';
+    toast('Erreur BDD : ' + error.message, true);
+    return;
+  }
+
+  fichiers.unshift(record);
+  saveFichiersLocal();
+  renderFichiers(fichiers);
+
+  // Reset
+  document.getElementById('fichNom').value = '';
+  document.getElementById('fichFormation').value = '';
+  document.getElementById('fichDropZone').innerHTML = `
+    <i class="fas fa-file-upload"></i>
+    <p>Cliquer pour choisir un fichier</p>
+    <span>PDF, MP4, ZIP, RAR — max 500 Mo</span>
+    <input type="file" id="fichFile" onchange="handleFileUpload(this)">`;
+  document.getElementById('fichPreview').textContent = '';
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-upload"></i> Uploader';
+  closeModal('modalFichier');
+  toast('✓ Fichier uploadé avec succès !');
+}
+
+async function deleteFichier(id) {
+  if (!confirm('Supprimer ce fichier ?')) return;
+  if (supabase_client) await supabase_client.from('fichiers').delete().eq('id', id);
+  fichiers = fichiers.filter(f=>f.id!=id);
+  saveFichiersLocal();
+  renderFichiers(fichiers);
+  toast('Fichier supprimé.');
+}
+
+// ══════════════════════════════════════════
+//  MESSAGES
+// ══════════════════════════════════════════
+let messages = JSON.parse(localStorage.getItem('mard_messages') || '[]');
+
+async function loadMessages(silent=false) {
+  if (supabase_client) {
+    const { data, error } = await supabase_client.from('messages').select('*').order('created_at', {ascending:false});
+    if (!error && data) { messages = data; localStorage.setItem('mard_messages', JSON.stringify(data)); }
+  }
+  renderMessages(messages);
+  const unread = messages.filter(m=>!m.lu).length;
+  document.getElementById('badgeMessages').textContent = unread;
+  document.getElementById('totalMessages').textContent = messages.length;
+
+  // dash preview
+  const preview = messages.slice(0,3);
+  const dashEl = document.getElementById('dashMessages');
+  if (!preview.length) {
+    dashEl.innerHTML = '<div class="empty"><i class="fas fa-envelope-open"></i><p>Aucun message</p></div>';
+  } else {
+    dashEl.innerHTML = preview.map(m=>`
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(62,146,204,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--blue);flex-shrink:0;">${(m.name||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:${m.lu?'400':'700'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.name||'Inconnu'}</div>
+          <div style="font-size:12px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(m.message||'').substring(0,60)}...</div>
+        </div>
+        <div style="font-size:11px;color:var(--grey);flex-shrink:0;">${m.created_at ? new Date(m.created_at).toLocaleDateString('fr') : ''}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderMessages(list) {
+  const el = document.getElementById('msgList');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><i class="fas fa-inbox"></i><p>Aucun message.</p></div>';
+    return;
+  }
+  el.innerHTML = list.map(m => `
+    <div class="msg-card ${m.lu?'':'unread'}">
+      <div class="msg-head">
+        <div>
+          <div class="msg-sender">${m.name||'Inconnu'} ${m.lu?'':'<span style="font-size:10px;background:var(--blue);color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;">Nouveau</span>'}</div>
+          <div class="msg-meta">${m.email||''} ${m.phone?'· '+m.phone:''}</div>
+        </div>
+        <div class="msg-date">${m.created_at ? new Date(m.created_at).toLocaleDateString('fr',{day:'2-digit',month:'short',year:'numeric'}) : ''}</div>
+      </div>
+      ${m.service ? `<div class="msg-service">${m.service}</div>` : ''}
+      <div class="msg-body">${(m.message||'').substring(0,200)}${(m.message||'').length>200?'...':''}</div>
+      <div class="msg-actions">
+        <button class="btn-secondary" style="padding:7px 14px;font-size:11px;" onclick="viewMessage('${m.id}')"><i class="fas fa-eye"></i> Lire</button>
+        <button class="btn-primary" style="padding:7px 14px;font-size:11px;" onclick="replyMessage('${m.email}')"><i class="fas fa-reply"></i> Répondre</button>
+        <button class="act-btn del" title="Supprimer" onclick="deleteMessage('${m.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function viewMessage(id) {
+  const m = messages.find(x=>x.id==id);
+  if (!m) return;
+  document.getElementById('msgDetailName').textContent = m.name||'Inconnu';
+  document.getElementById('msgDetailMeta').textContent = `${m.email||''} ${m.phone?'· '+m.phone:''}`;
+  document.getElementById('msgDetailService').textContent = m.service||'Message général';
+  document.getElementById('msgDetailBody').textContent = m.message||'';
+  document.getElementById('replyBtn').onclick = () => replyMessage(m.email);
+  // mark as read
+  if (!m.lu) {
+    m.lu = true;
+    if (supabase_client) await supabase_client.from('messages').update({lu:true}).eq('id',id);
+    localStorage.setItem('mard_messages', JSON.stringify(messages));
+    document.getElementById('badgeMessages').textContent = messages.filter(x=>!x.lu).length;
+  }
+  openModal('modalMessage');
+}
+
+function replyMessage(email) {
+  window.open(`mailto:${email}`, '_blank');
+}
+
+async function deleteMessage(id) {
+  if (!confirm('Supprimer ce message ?')) return;
+  if (supabase_client) await supabase_client.from('messages').delete().eq('id', id);
+  messages = messages.filter(m=>m.id!=id);
+  localStorage.setItem('mard_messages', JSON.stringify(messages));
+  renderMessages(messages);
+  document.getElementById('totalMessages').textContent = messages.length;
+  toast('Message supprimé.');
+}
+
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+function loadConfig() {
+  if (cfg.url)        document.getElementById('cfgUrl').value        = cfg.url;
+  if (cfg.key)        document.getElementById('cfgKey').value        = cfg.key;
+  if (cfg.ejsKey)      document.getElementById('cfgEjsKey').value      = cfg.ejsKey;
+  if (cfg.ejsService)  document.getElementById('cfgEjsService').value  = cfg.ejsService;
+  if (cfg.ejsTemplate) document.getElementById('cfgEjsTemplate').value = cfg.ejsTemplate;
+  if (cfg.serviceKey) document.getElementById('cfgServiceKey').value = cfg.serviceKey;
+  if (cfg.ig)   document.getElementById('cfgIg').value  = cfg.ig;
+  if (cfg.fb)   document.getElementById('cfgFb').value  = cfg.fb;
+  if (cfg.tk)   document.getElementById('cfgTk').value  = cfg.tk;
+  if (cfg.li)   document.getElementById('cfgLi').value  = cfg.li;
+  if (cfg.be)   document.getElementById('cfgBe').value  = cfg.be;
+  if (cfg.tel1)  document.getElementById('cfgTel1').value  = cfg.tel1;
+  if (cfg.tel2)  document.getElementById('cfgTel2').value  = cfg.tel2;
+  if (cfg.email) document.getElementById('cfgEmail').value = cfg.email;
+  if (cfg.addr)  document.getElementById('cfgAddr').value  = cfg.addr;
+}
+
+function saveConfig() {
+  cfg.url        = document.getElementById('cfgUrl').value.trim();
+  cfg.key        = document.getElementById('cfgKey').value.trim();
+  cfg.serviceKey = document.getElementById('cfgServiceKey').value.trim();
+  const newPwd   = document.getElementById('cfgPwd').value.trim();
+  if (newPwd) cfg.pwd = newPwd;
+  localStorage.setItem('mard_cfg', JSON.stringify(cfg));
+
+  if (cfg.url && (cfg.serviceKey || cfg.key)) {
+    const ok = initSupabase();
+    const statusEl = document.getElementById('cfgStatus');
+    statusEl.innerHTML = ok
+      ? '<span style="color:var(--green)"><i class="fas fa-check-circle"></i> Supabase configuré avec '+(cfg.serviceKey?'clé service_role ✓':'clé anon (accès limité)')+'</span>'
+      : '<span style="color:var(--red)"><i class="fas fa-times-circle"></i> Erreur de connexion</span>';
+  }
+  toast('Configuration enregistrée !');
+}
+
+async function testSupabase() {
+  if (!supabase_client) {
+    const ok = initSupabase();
+    if (!ok) { toast('Configurez d\'abord URL + clé service_role', true); return; }
+  }
+  const statusEl = document.getElementById('cfgStatus');
+  statusEl.innerHTML = '<span style="color:var(--grey)"><i class="fas fa-spinner fa-spin"></i> Test en cours...</span>';
+  try {
+    const { data, error } = await supabase_client.from('formations').select('id').limit(1);
+    if (error) throw error;
+    const { data: msgs, error: e2 } = await supabase_client.from('messages').select('id').limit(1);
+    const msgOk = !e2;
+    statusEl.innerHTML = `
+      <span style="color:var(--green)"><i class="fas fa-check-circle"></i> Connexion réussie !</span>
+      ${!msgOk ? '<br><span style="color:var(--orange);font-size:12px;margin-top:4px;display:block;"><i class="fas fa-exclamation-triangle"></i> Messages inaccessibles — utilisez la clé service_role</span>' : '<br><span style="color:var(--green);font-size:12px;margin-top:4px;display:block;"><i class="fas fa-check"></i> Lecture messages OK</span>'}
+    `;
+    toast(msgOk ? 'Tout fonctionne !' : 'Connexion OK mais accès limité');
+  } catch(e) {
+    statusEl.innerHTML = `<span style="color:var(--red)"><i class="fas fa-times-circle"></i> Erreur : ${e.message}</span>`;
+    toast('Échec de connexion', true);
+  }
+}
+
+function saveSocials() {
+  cfg.ig = document.getElementById('cfgIg').value.trim();
+  cfg.fb = document.getElementById('cfgFb').value.trim();
+  cfg.tk = document.getElementById('cfgTk').value.trim();
+  cfg.li = document.getElementById('cfgLi').value.trim();
+  cfg.be = document.getElementById('cfgBe').value.trim();
+  localStorage.setItem('mard_cfg', JSON.stringify(cfg));
+  toast('Réseaux sociaux enregistrés !');
+}
+
+function saveContact() {
+  cfg.tel1  = document.getElementById('cfgTel1').value.trim();
+  cfg.tel2  = document.getElementById('cfgTel2').value.trim();
+  cfg.email = document.getElementById('cfgEmail').value.trim();
+  cfg.addr  = document.getElementById('cfgAddr').value.trim();
+  localStorage.setItem('mard_cfg', JSON.stringify(cfg));
+  toast('Informations de contact enregistrées !');
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-ov').forEach(ov => {
+  ov.addEventListener('click', e => { if(e.target===ov) closeModal(ov.id); });
+});
+
+// ══════════════════════════════════════════
+//  COMMANDES
+// ══════════════════════════════════════════
+let commandes = JSON.parse(localStorage.getItem('mard_commandes') || '[]');
+
+function saveCommandesLocal() {
+  localStorage.setItem('mard_commandes', JSON.stringify(commandes));
+  const pending = commandes.filter(c => c.statut === 'en_attente').length;
+  document.getElementById('badgeCommandes').textContent = pending;
+  // stat dashboard
+  const el = document.getElementById('totalCommandes');
+  if (el) el.textContent = commandes.length;
+}
+
+async function loadCommandes(silent=false) {
+  if (supabase_client) {
+    const { data, error } = await supabase_client.from('commandes')
+      .select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      commandes = data;
+      localStorage.setItem('mard_commandes', JSON.stringify(data));
+    }
+  }
+  renderCommandes(commandes);
+  saveCommandesLocal();
+}
+
+function filterCommandes(statut, btn) {
+  document.querySelectorAll('.f-btn-admin').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const list = statut === 'all' ? commandes : commandes.filter(c => c.statut === statut);
+  renderCommandes(list);
+}
+
+function renderCommandes(list) {
+  const tbody = document.getElementById('tbodyCommandes');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><i class="fas fa-shopping-bag"></i><p>Aucune commande.</p></div></td></tr>';
+    return;
+  }
+  const statutBadge = {
+    en_attente: '<span style="background:rgba(243,156,18,.12);color:var(--orange);border:1px solid rgba(243,156,18,.3);padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">En attente</span>',
+    validee:    '<span style="background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Validée</span>',
+    refusee:    '<span style="background:rgba(231,76,60,.1);color:var(--red);border:1px solid rgba(231,76,60,.3);padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Refusée</span>',
+  };
+  tbody.innerHTML = list.map(c => `
+    <tr style="${c.statut==='en_attente'?'background:rgba(243,156,18,.03);':''}">
+      <td style="color:var(--grey);font-size:12px;white-space:nowrap;">${c.created_at ? new Date(c.created_at).toLocaleDateString('fr',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+      <td><strong style="font-size:13px;">${c.formation||'—'}</strong><br><span style="font-size:11px;color:var(--blue);">${c.prix||''} FCFA</span></td>
+      <td><strong>${c.nom||'—'}</strong></td>
+      <td style="font-size:12px;color:var(--grey2);">${c.email||'—'}<br>${c.phone||''}</td>
+      <td style="font-size:12px;"><span style="color:var(--blue);font-weight:600;">${c.moyen_paiement||'—'}</span></td>
+      <td style="font-family:monospace;font-size:12px;color:var(--white);">${c.reference||'—'}</td>
+      <td>${statutBadge[c.statut]||''}</td>
+      <td>
+        ${c.statut === 'en_attente'
+          ? `<button class="btn-primary" style="padding:7px 14px;font-size:11px;background:var(--green);border-color:var(--green);" onclick="openAcces('${c.id}')"><i class="fas fa-key"></i> Accorder</button>`
+          : c.lien_acces
+            ? `<button class="btn-secondary" style="padding:7px 12px;font-size:11px;" onclick="copyLink('${c.lien_acces}')"><i class="fas fa-copy"></i></button>`
+            : '<span style="font-size:11px;color:var(--grey);">—</span>'
+        }
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAcces(id) {
+  const c = commandes.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('accesCommandeId').value = id;
+  document.getElementById('accesSubtitle').textContent = `Commande de ${c.nom} — ${c.formation}`;
+  document.getElementById('accesResume').innerHTML = `
+    <strong>👤 Client :</strong> ${c.nom}<br>
+    <strong>📧 Email :</strong> ${c.email}<br>
+    <strong>📱 WhatsApp :</strong> ${c.phone}<br>
+    <strong>📚 Formation :</strong> ${c.formation}<br>
+    <strong>💰 Prix :</strong> ${c.prix} FCFA via <strong>${c.moyen_paiement}</strong><br>
+    <strong>🔖 Référence :</strong> <span style="font-family:monospace;color:var(--white);background:var(--bg3);padding:2px 8px;">${c.reference}</span>
+  `;
+  // populate fichiers dropdown filtered by formation
+  const sel = document.getElementById('accesFichier');
+  sel.innerHTML = '<option value="">— Choisir le fichier —</option>';
+  fichiers.forEach(f => {
+    if (!f.formation || f.formation.toLowerCase().includes((c.formation||'').toLowerCase().substring(0,10))) {
+      const o = document.createElement('option');
+      o.value = f.url || '';
+      o.textContent = f.nom + (f.formation ? ` (${f.formation})` : '');
+      sel.appendChild(o);
+    }
+  });
+  document.getElementById('accesLien').value = '';
+  openModal('modalAcces');
+}
+
+async function accorderAcces() {
+  const id   = document.getElementById('accesCommandeId').value;
+  const sel  = document.getElementById('accesFichier').value;
+  const man  = document.getElementById('accesLien').value.trim();
+  const lien = sel || man;
+
+  if (!lien) { toast('Sélectionnez un fichier ou entrez un lien', true); return; }
+
+  const c = commandes.find(x => x.id === id);
+  if (!c) return;
+
+  const btn = document.querySelector('#modalAcces .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+
+  // 1 — Mettre à jour en BDD
+  if (supabase_client) {
+    await supabase_client.from('commandes')
+      .update({ statut: 'validee', lien_acces: lien }).eq('id', id);
+  }
+  const idx = commandes.findIndex(x => x.id === id);
+  if (idx > -1) { commandes[idx].statut = 'validee'; commandes[idx].lien_acces = lien; }
+  saveCommandesLocal();
+
+  // 2 — Envoyer email via EmailJS
+  let emailSent = false;
+  const ejsCfg = JSON.parse(localStorage.getItem('mard_cfg') || '{}');
+
+  if (ejsCfg.ejsKey && ejsCfg.ejsService && ejsCfg.ejsTemplate) {
+    try {
+      emailjs.init(ejsCfg.ejsKey);
+      await emailjs.send(ejsCfg.ejsService, ejsCfg.ejsTemplate, {
+        to_name:    c.nom,
+        to_email:   c.email,
+        formation:  c.formation,
+        lien:       lien,
+        from_name:  'Mario — MARDIGITAL AGENCE',
+        reply_to:   'mardigitalagence@gmail.com',
+      });
+      emailSent = true;
+    } catch(e) {
+      console.error('EmailJS error:', e);
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-check"></i> Valider & Envoyer le lien';
+  closeModal('modalAcces');
+  renderCommandes(commandes);
+
+  if (emailSent) {
+    toast(`✓ Accès accordé — email envoyé à ${c.email}`);
+  } else {
+    // Fallback : ouvrir WhatsApp avec le lien
+    const msg = encodeURIComponent(
+      `Bonjour ${c.nom} 👋\n\nVotre paiement pour la formation "${c.formation}" a été vérifié ✅\n\nVoici votre lien de téléchargement :\n${lien}\n\nMerci pour votre confiance !\nMario — MARDIGITAL AGENCE`
+    );
+    const phone = c.phone.replace(/[\s\+\-\(\)]/g,'');
+    const waUrl = `https://wa.me/${phone}?text=${msg}`;
+
+    // Afficher modal choix envoi
+    showSendOptions(c, lien, waUrl);
+  }
+}
+
+function showSendOptions(c, lien, waUrl) {
+  // Petit toast avec boutons d'action
+  const el = document.getElementById('toast');
+  el.className = 'show';
+  el.style.maxWidth = '420px';
+  el.innerHTML = `
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;">
+        <i class="fas fa-check-circle" style="color:var(--green);margin-right:6px;"></i>
+        Commande validée — EmailJS non configuré
+      </div>
+      <div style="font-size:12px;color:var(--grey2);margin-bottom:10px;">Envoie le lien manuellement :</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="${waUrl}" target="_blank" style="background:#25D366;color:#fff;padding:8px 14px;font-size:11px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="mailto:${c.email}?subject=Votre accès formation ${c.formation}&body=Bonjour ${c.nom},%0D%0A%0D%0AVotre paiement a été vérifié.%0D%0A%0D%0AVotre lien : ${encodeURIComponent(lien)}" style="background:var(--blue);color:#fff;padding:8px 14px;font-size:11px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-envelope"></i> Email
+        </a>
+        <button onclick="navigator.clipboard.writeText('${lien}').then(()=>toast('Lien copié !'))" style="background:var(--bg3);border:1px solid var(--line);color:var(--grey2);padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:Poppins,sans-serif;">
+          <i class="fas fa-copy"></i> Copier lien
+        </button>
+      </div>
+    </div>
+  `;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.classList.remove('show');
+    el.style.maxWidth = '';
+    el.innerHTML = '<i class="fas fa-check-circle"></i><span id="toastMsg"></span>';
+  }, 12000);
+}
+
+function saveEmailJS() {
+  cfg.ejsKey      = document.getElementById('cfgEjsKey').value.trim();
+  cfg.ejsService  = document.getElementById('cfgEjsService').value.trim();
+  cfg.ejsTemplate = document.getElementById('cfgEjsTemplate').value.trim();
+  localStorage.setItem('mard_cfg', JSON.stringify(cfg));
+  const ok = cfg.ejsKey && cfg.ejsService && cfg.ejsTemplate;
+  document.getElementById('ejsStatus').innerHTML = ok
+    ? '<span style="color:var(--green)"><i class="fas fa-check-circle"></i> EmailJS configuré — emails automatiques activés</span>'
+    : '<span style="color:var(--orange)"><i class="fas fa-exclamation-triangle"></i> Remplissez les 3 champs</span>';
+  toast(ok ? 'EmailJS configuré !' : 'Remplissez les 3 champs EmailJS', !ok);
+}
+
+async function refuserCommande() {
+  const id = document.getElementById('accesCommandeId').value;
+  if (!confirm('Marquer cette commande comme refusée ?')) return;
+  if (supabase_client) await supabase_client.from('commandes').update({ statut:'refusee' }).eq('id', id);
+  const idx = commandes.findIndex(x => x.id === id);
+  if (idx > -1) commandes[idx].statut = 'refusee';
+  saveCommandesLocal();
+  closeModal('modalAcces');
+  renderCommandes(commandes);
+  toast('Commande marquée comme refusée.');
+}
+
+
+function toast(msg, err=false) {
+  const el = document.getElementById('toast');
+  const icon = el.querySelector('i');
+  document.getElementById('toastMsg').textContent = msg;
+  el.className = 'show' + (err?' err':'');
+  icon.className = err ? 'fas fa-times-circle' : 'fas fa-check-circle';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
