@@ -6,6 +6,7 @@
 <title>MARDIGITAL — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" type="image/png" href="Fr/SITE-LOGO.png">
 <!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -46,6 +47,20 @@ body.light {
   --orange:  #d97706;
 }
 body.light ::-webkit-scrollbar-track { background:var(--bg2); }
+
+/* Logo sur fond clair : background navy pour que le logo blanc reste lisible */
+body.light .login-logo-wrap,
+body.light .sb-logo { background: #0A2463 !important; }
+body.light .login-logo-wrap { 
+  padding: 20px 28px; 
+  border-radius: 8px; 
+  display: inline-block; 
+  margin-bottom: 28px;
+}
+body.light .sb-logo { 
+  padding: 20px 24px !important; 
+  border-bottom: 1px solid rgba(62,146,204,.3) !important; 
+}
 
 /* ══ Toggle bouton ══ */
 .theme-toggle {
@@ -346,7 +361,9 @@ tbody tr:hover td { background:rgba(62,146,204,.04); }
 <!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen">
   <div class="login-box">
-    <img src="Fr/LOGO2.png" alt="MARDIGITAL" class="login-logo">
+    <div class="login-logo-wrap">
+      <img src="Fr/LOGO2.png" alt="MARDIGITAL" class="login-logo" style="margin:0 auto">
+    </div>
     <div class="login-title">Espace Administrateur</div>
     <div class="login-sub">Accès réservé — MARDIGITAL AGENCE</div>
     <input type="password" id="pwInput" placeholder="Mot de passe" autocomplete="current-password">
@@ -394,6 +411,15 @@ tbody tr:hover td { background:rgba(62,146,204,.04); }
       </div>
       <div class="sb-item" onclick="goTo('config')">
         <i class="fas fa-cog"></i><span>Configuration</span>
+      </div>
+      <div class="sb-sep">Plateforme</div>
+      <div class="sb-item" onclick="goTo('lms')">
+        <i class="fas fa-graduation-cap" style="color:#a78bfa;"></i><span>LMS — Formations</span>
+        <span class="sb-badge" id="badgeLms" style="background:#7c3aed;">0</span>
+      </div>
+      <div class="sb-item" onclick="goTo('lms-acces')">
+        <i class="fas fa-key" style="color:#a78bfa;"></i><span>LMS — Accès</span>
+        <span class="sb-badge" id="badgeLmsAcces" style="background:#7c3aed;">0</span>
       </div>
     </nav>
     <div class="sb-bottom">
@@ -594,15 +620,57 @@ tbody tr:hover td { background:rgba(62,146,204,.04); }
             <button class="btn-secondary" onclick="testSupabase()"><i class="fas fa-plug"></i> Tester la connexion</button>
           </div>
           <div id="cfgStatus" style="margin-top:12px;font-size:13px;"></div>
-          
+          <!-- Aide buckets Storage -->
+          <div style="margin-top:20px;background:rgba(62,146,204,.06);border:1px solid var(--line);padding:16px 18px;">
+            <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue);margin-bottom:10px;"><i class="fas fa-folder-open"></i> Activer l'upload d'images et de fichiers</div>
+            <p style="font-size:12px;color:var(--grey2);line-height:1.8;margin-bottom:12px;">
+              Pour pouvoir uploader des images (photos, formations) et des fichiers (PDF, vidéos) depuis l'admin, il faut créer deux dossiers de stockage dans ton projet Supabase. C'est gratuit et ça prend 2 minutes :
+            </p>
+            <ol style="font-size:12px;color:var(--grey2);line-height:2;padding-left:18px;margin-bottom:12px;">
+              <li>Va sur <strong style="color:var(--white);">supabase.com</strong> → ton projet → menu de gauche <strong style="color:var(--white);">Storage</strong></li>
+              <li>Clique <strong style="color:var(--white);">New bucket</strong> → nom : <code style="background:var(--bg);padding:1px 6px;color:var(--blue);">portfolio-images</code> → coche <strong>Public</strong> → Create</li>
+              <li>Refais pareil → nom : <code style="background:var(--bg);padding:1px 6px;color:var(--blue);">formations-files</code> → coche <strong>Public</strong> → Create</li>
+            </ol>
+            <p style="font-size:12px;color:var(--grey2);">C'est tout. Les uploads fonctionneront automatiquement après ça.</p>
+          </div>
         </div>
 
-        
+        <!-- Accès formations après achat -->
+        <div class="config-card" style="grid-column:1/-1;background:rgba(46,204,113,.04);border-color:rgba(46,204,113,.2);">
+          <h3><i class="fas fa-key" style="color:var(--green);"></i> Comment donner accès à une formation</h3>
+          <p style="margin-bottom:16px;">Voici le processus actuel (manuel) pour accorder l'accès à un acheteur :</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+            <div style="background:var(--bg2);border:1px solid var(--line);padding:18px;">
+              <div style="font-size:22px;color:var(--blue);font-weight:800;margin-bottom:8px;">1</div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Client achète</div>
+              <p style="font-size:12px;color:var(--grey);line-height:1.6;">Le client clique "Acheter", remplit son nom/email/WhatsApp dans la modale.</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--line);padding:18px;">
+              <div style="font-size:22px;color:var(--blue);font-weight:800;margin-bottom:8px;">2</div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Tu confirmes le paiement</div>
+              <p style="font-size:12px;color:var(--grey);line-height:1.6;">Tu reçois l'info (WhatsApp/email). Tu vas dans <strong>Fichiers formations</strong> et tu copies le lien du fichier.</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--line);padding:18px;">
+              <div style="font-size:22px;color:var(--blue);font-weight:800;margin-bottom:8px;">3</div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Tu envoies le lien</div>
+              <p style="font-size:12px;color:var(--grey);line-height:1.6;">Tu envoies le lien Supabase Storage au client par WhatsApp ou email. Il télécharge directement.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px 16px;background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.25);font-size:12px;color:var(--orange);">
+            <i class="fas fa-lightbulb"></i> <strong>Prochaine étape :</strong> Intégrer Stripe pour automatiser tout ça — paiement confirmé = lien envoyé automatiquement par email.
+          </div>
+        </div>
 
         <!-- EmailJS — envoi email au client -->
         <div class="config-card" style="grid-column:1/-1;background:rgba(46,204,113,.03);border-color:rgba(46,204,113,.2);">
           <h3><i class="fas fa-paper-plane" style="color:var(--green);"></i> EmailJS — Envoi email au client</h3>
           <p style="margin-bottom:14px;">EmailJS permet d'envoyer l'email d'accès directement au client depuis ton navigateur. Gratuit jusqu'à 200 emails/mois. <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue);">emailjs.com →</a></p>
+          <div style="background:var(--bg3);border:1px solid var(--line);padding:14px 16px;font-size:12px;color:var(--grey2);line-height:1.9;margin-bottom:16px;">
+            <strong style="color:var(--white);">Configuration en 3 étapes :</strong><br>
+            1. Crée un compte sur emailjs.com → <strong style="color:var(--white);">Add New Service</strong> → choisis Gmail → connecte ton email<br>
+            2. Va dans <strong style="color:var(--white);">Email Templates</strong> → Create Template → note le <strong style="color:var(--blue);">Template ID</strong><br>
+            3. Va dans <strong style="color:var(--white);">Account → API Keys</strong> → copie ta <strong style="color:var(--blue);">Public Key</strong>
+          </div>
           <div class="f-row2">
             <div class="f-grp"><label>Public Key</label><input type="text" id="cfgEjsKey" placeholder="votre_public_key"></div>
             <div class="f-grp"><label>Service ID</label><input type="text" id="cfgEjsService" placeholder="service_xxxxxxx"></div>
@@ -637,10 +705,187 @@ tbody tr:hover td { background:rgba(62,146,204,.04); }
 
       </div>
     </div>
+
+    <!-- ═══ PAGE : LMS FORMATIONS ═══ -->
+    <div class="page" id="page-lms">
+      <div class="page-header">
+        <div><h1>Plateforme LMS</h1><p>Gérer les formations, modules et leçons</p></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-primary" onclick="lmsOpenAddFormation()"><i class="fas fa-plus"></i> Nouvelle formation</button>
+          <a href="bibliotheque.html" target="_blank" class="btn-secondary"><i class="fas fa-external-link-alt"></i> Portail étudiant</a>
+        </div>
+      </div>
+      <div id="lms-list">
+        <div class="port-admin-grid" id="lmsFormGrid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="empty" style="grid-column:1/-1"><i class="fas fa-graduation-cap"></i><p>Aucune formation LMS.</p></div>
+        </div>
+      </div>
+      <div id="lms-detail" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;cursor:pointer;color:var(--grey);font-size:13px;" onclick="lmsBackList()">
+          <i class="fas fa-arrow-left"></i> Retour
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+          <div><h2 id="lmsDetTitle" style="font-size:20px;font-weight:800;"></h2><p id="lmsDetDesc" style="font-size:13px;color:var(--grey);margin-top:4px;"></p></div>
+          <button class="btn-primary" onclick="lmsOpenAddModule()"><i class="fas fa-plus"></i> Ajouter module</button>
+        </div>
+        <div id="lmsModulesWrap"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE : LMS ACCÈS ═══ -->
+    <div class="page" id="page-lms-acces">
+      <div class="page-header">
+        <div><h1>Accès étudiants LMS</h1><p>Tokens d'accès et progression</p></div>
+        <button class="btn-primary" onclick="openModal('modalLmsAcces')"><i class="fas fa-plus"></i> Donner accès</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Étudiant</th><th>Formation</th><th>Token</th><th>Expire</th><th>Progression</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="lmsAccesTable"><tr><td colspan="7"><div class="empty"><i class="fas fa-key"></i><p>Aucun accès.</p></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
 </div>
 
 <!-- ══════════ MODALS ══════════ -->
+
+<!-- Modal : LMS — Formation -->
+<div class="modal-ov" id="modalLmsFormation">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalLmsFormation')"><i class="fas fa-times"></i></button>
+    <h2>Activer une formation dans le LMS</h2>
+    <div class="modal-sub">La formation doit d'abord exister dans l'onglet "Formations"</div>
+    <div class="f-grp"><label>Formation *</label><select id="lmsFmtSel"><option value="">— Choisir —</option></select></div>
+    <div style="font-size:12px;color:var(--grey);padding:10px 14px;background:rgba(62,146,204,.06);border:1px solid var(--line);margin-bottom:14px;">
+      <i class="fas fa-info-circle" style="color:var(--blue);margin-right:6px;"></i>
+      Une fois activée, vous pourrez y ajouter modules et leçons, puis donner accès aux étudiants.
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalLmsFormation')">Annuler</button>
+      <button class="btn-primary" onclick="lmsActiverFormation()"><i class="fas fa-check"></i> Activer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : LMS — Module -->
+<div class="modal-ov" id="modalLmsModule">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalLmsModule')"><i class="fas fa-times"></i></button>
+    <h2>Ajouter un module</h2>
+    <div class="modal-sub" id="lmsModSub"></div>
+    <div class="f-grp"><label>Titre *</label><input type="text" id="lmsModTitre" placeholder="ex: Module 1 — Les bases"></div>
+    <div class="f-grp"><label>Description</label><textarea id="lmsModDesc" placeholder="Objectifs de ce module..."></textarea></div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalLmsModule')">Annuler</button>
+      <button class="btn-primary" onclick="lmsSaveModule()"><i class="fas fa-save"></i> Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : LMS — Leçon -->
+<div class="modal-ov" id="modalLmsLecon">
+  <div class="modal" style="max-width:640px;">
+    <button class="m-close" onclick="closeModal('modalLmsLecon')"><i class="fas fa-times"></i></button>
+    <h2>Ajouter une leçon</h2>
+    <div class="modal-sub" id="lmsLecSub"></div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Titre *</label><input type="text" id="lmsLecTitre" placeholder="ex: Introduction"></div>
+      <div class="f-grp"><label>Type</label>
+        <select id="lmsLecType" onchange="lmsSwitchType()">
+          <option value="video">Vidéo (MP4, MOV)</option>
+          <option value="pdf">PDF — lecture intégrée</option>
+          <option value="word">Word (DOC, DOCX)</option>
+          <option value="zip">Fichier / Archive</option>
+          <option value="text">Texte rédigé</option>
+        </select>
+      </div>
+    </div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Durée</label><input type="text" id="lmsLecDuree" placeholder="ex: 12:34"></div>
+      <div class="f-grp"><label>Description</label><input type="text" id="lmsLecDesc" placeholder="Contenu abordé"></div>
+    </div>
+    <div id="lmsLecFileZone">
+      <div class="f-grp"><label>Uploader un fichier</label>
+        <div class="upload-zone" id="lmsLecDrop" onclick="document.getElementById('lmsLecFile').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Cliquer ou glisser-déposer</p>
+          <span>MP4, PDF, DOC, DOCX, ZIP — max 2 Go</span>
+          <input type="file" id="lmsLecFile" onchange="lmsHandleUpload(this)">
+        </div>
+        <div class="upload-prog" id="lmsLecProg"><div class="fill" id="lmsLecProgFill"></div></div>
+        <div id="lmsLecFileInfo" style="font-size:12px;color:var(--grey);margin-top:6px;"></div>
+      </div>
+      <div class="f-grp"><label>Ou URL directe</label><input type="text" id="lmsLecUrl" placeholder="https://..."></div>
+    </div>
+    <div id="lmsLecTextZone" style="display:none;">
+      <div class="f-grp"><label>Contenu</label><textarea id="lmsLecContenu" style="min-height:130px;" placeholder="Rédigez le cours ici..."></textarea></div>
+    </div>
+    <div class="f-grp"><label>Permissions</label>
+      <div style="display:flex;gap:18px;margin-top:6px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey2);cursor:pointer;text-transform:none;letter-spacing:0;"><input type="checkbox" id="lmsLecWatch" checked style="accent-color:var(--blue);width:15px;height:15px;"> Lecture</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey2);cursor:pointer;text-transform:none;letter-spacing:0;"><input type="checkbox" id="lmsLecDl" style="accent-color:var(--blue);width:15px;height:15px;"> Téléchargement</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grey2);cursor:pointer;text-transform:none;letter-spacing:0;"><input type="checkbox" id="lmsLecFree" style="accent-color:var(--blue);width:15px;height:15px;"> Aperçu gratuit</label>
+      </div>
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalLmsLecon')">Annuler</button>
+      <button class="btn-primary" id="btnLmsLec" onclick="lmsSaveLecon()"><i class="fas fa-save"></i> Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : LMS — Donner accès -->
+<div class="modal-ov" id="modalLmsAcces">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalLmsAcces')"><i class="fas fa-times"></i></button>
+    <h2>Donner accès à un étudiant</h2>
+    <div class="modal-sub">Un token unique sera généré et partageable</div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Nom *</label><input type="text" id="laName" placeholder="Kofi Mensah"></div>
+      <div class="f-grp"><label>Email</label><input type="email" id="laEmail" placeholder="kofi@email.com"></div>
+    </div>
+    <div class="f-grp"><label>WhatsApp</label><input type="tel" id="laTel" placeholder="+228 90000000"></div>
+    <div class="f-grp"><label>Formation *</label><select id="laFmt"><option value="">— Choisir —</option></select></div>
+    <div class="f-row2">
+      <div class="f-grp"><label>Expire dans</label>
+        <select id="laExp"><option value="7">7 jours</option><option value="30" selected>30 jours</option><option value="90">3 mois</option><option value="365">1 an</option><option value="0">Permanent</option></select>
+      </div>
+      <div class="f-grp"><label>Télécharg. max</label>
+        <select id="laDl"><option value="0">Illimités</option><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select>
+      </div>
+    </div>
+    <div class="f-actions">
+      <button class="btn-secondary" onclick="closeModal('modalLmsAcces')">Annuler</button>
+      <button class="btn-primary" style="background:var(--green);" onclick="lmsCreerAcces()"><i class="fas fa-key"></i> Générer token</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : LMS — Token -->
+<div class="modal-ov" id="modalLmsToken">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal('modalLmsToken')"><i class="fas fa-times"></i></button>
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(46,204,113,.1);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--green);margin:0 auto 12px;"><i class="fas fa-check"></i></div>
+      <h2>Accès créé !</h2>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--line);padding:14px 18px;margin-bottom:10px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--grey);text-transform:uppercase;margin-bottom:6px;">Token</div>
+      <div id="lmsTokenCode" style="font-size:24px;font-weight:800;letter-spacing:3px;font-family:'Bebas Neue',sans-serif;"></div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--line);padding:12px 16px;margin-bottom:14px;word-break:break-all;font-size:12px;color:var(--blue);">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--grey);text-transform:uppercase;margin-bottom:4px;">Lien direct</div>
+      <span id="lmsTokenLink"></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="lmsCopyToken()"><i class="fas fa-copy"></i> Copier</button>
+      <button class="btn-secondary" onclick="lmsWaToken()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+      <button class="btn-secondary" onclick="lmsEmailToken()"><i class="fas fa-envelope"></i> Email</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal : Formation -->
 <div class="modal-ov" id="modalFormation">
@@ -903,12 +1148,14 @@ function goTo(page) {
   document.getElementById('page-'+page).classList.add('active');
   event.currentTarget?.classList.add('active');
 
-  if (page==='formations') loadFormations();
-  if (page==='portfolio')  loadPortfolio();
-  if (page==='messages')   loadMessages();
-  if (page==='fichiers')   loadFichiers();
-  if (page==='commandes')  loadCommandes();
-  if (page==='config')     loadConfig();
+  if (page==='formations')  loadFormations();
+  if (page==='portfolio')   loadPortfolio();
+  if (page==='messages')    loadMessages();
+  if (page==='fichiers')    loadFichiers();
+  if (page==='commandes')   loadCommandes();
+  if (page==='config')      loadConfig();
+  if (page==='lms')         lmsInit();
+  if (page==='lms-acces')   lmsInit();
 }
 
 // ══ DASHBOARD INIT ══
@@ -916,6 +1163,7 @@ async function initDashboard() {
   initSupabase();
   loadConfig();
   await Promise.all([loadFormations(true), loadPortfolio(true), loadMessages(true), loadFichiers(true), loadCommandes(true)]);
+  lmsInit();
 }
 
 // ══════════════════════════════════════════
@@ -1830,6 +2078,473 @@ async function refuserCommande() {
   toast('Commande marquée comme refusée.');
 }
 
+
+// ══════════════════════════════════════════
+//  LMS — PLATEFORME FORMATIONS
+//  Source unique : mard_formations (partagé admin+LMS)
+//               + mard_lms_modules (modules/leçons)
+//               + mard_lms_acces  (tokens étudiants)
+// ══════════════════════════════════════════
+let lmsFormations = [];  // formations actives dans le LMS (avec modules)
+let lmsAccesListe = [];
+let lmsCurFmt     = null;
+let lmsCurModId   = null;
+let lmsUpFile     = null;
+let lmsLastToken  = null;
+
+function lmsLoadLocal() {
+  const fmts     = JSON.parse(localStorage.getItem('mard_formations') || '[]');
+  const modsMap  = JSON.parse(localStorage.getItem('mard_lms_modules') || '{}');
+  // Seules les formations qui ont des modules OU sont explicitement activées
+  const active   = JSON.parse(localStorage.getItem('mard_lms_active') || '[]');
+  lmsFormations  = fmts
+    .filter(f => active.includes(f.id) || modsMap[f.id])
+    .map(f => ({ ...f, modules: modsMap[f.id] || [] }));
+  lmsAccesListe  = JSON.parse(localStorage.getItem('mard_lms_acces') || '[]');
+}
+
+function lmsSaveLocal() {
+  // Sauvegarder modules séparément pour survivre à la sync des formations
+  const modsMap = {};
+  lmsFormations.forEach(f => { if (f.modules?.length) modsMap[f.id] = f.modules; });
+  localStorage.setItem('mard_lms_modules', JSON.stringify(modsMap));
+  localStorage.setItem('mard_lms_acces', JSON.stringify(lmsAccesListe));
+  // Mettre à jour la liste des formations actives
+  const active = lmsFormations.map(f => f.id);
+  localStorage.setItem('mard_lms_active', JSON.stringify(active));
+  // Sync Supabase modules
+  const sb = supabase_client;
+  if (sb) {
+    lmsFormations.forEach(f => {
+      sb.from('formations').update({ modules: f.modules }).eq('id', f.id).then(() => {});
+    });
+    lmsAccesListe.forEach(a => {
+      // upsert accès
+    });
+  }
+}
+
+async function lmsInit() {
+  lmsLoadLocal();
+  // Sync accès depuis Supabase
+  if (supabase_client) {
+    const { data } = await supabase_client.from('lms_acces').select('*').order('created_at', {ascending:false});
+    if (data) { lmsAccesListe = data; localStorage.setItem('mard_lms_acces', JSON.stringify(data)); }
+    // Sync modules depuis formations Supabase
+    const fmts = JSON.parse(localStorage.getItem('mard_formations') || '[]');
+    const active = JSON.parse(localStorage.getItem('mard_lms_active') || '[]');
+    const modsMap = JSON.parse(localStorage.getItem('mard_lms_modules') || '{}');
+    lmsFormations = fmts.filter(f => active.includes(f.id) || modsMap[f.id])
+      .map(f => ({ ...f, modules: modsMap[f.id] || f.modules || [] }));
+  }
+  lmsRenderGrid();
+  lmsRenderAccesTable();
+  lmsUpdateBadges();
+  lmsPopulateSelects();
+}
+
+function lmsUpdateBadges() {
+  document.getElementById('badgeLms').textContent = lmsFormations.length;
+  document.getElementById('badgeLmsAcces').textContent = lmsAccesListe.filter(a=>a.statut==='active').length;
+}
+
+function lmsPopulateSelects() {
+  const all = JSON.parse(localStorage.getItem('mard_formations') || '[]');
+  // Select "activer formation"
+  const sel = document.getElementById('lmsFmtSel');
+  if (sel) sel.innerHTML = '<option value="">— Choisir —</option>' +
+    all.map(f => `<option value="${f.id}">${f.titre}</option>`).join('');
+  // Select "donner accès"
+  const sel2 = document.getElementById('laFmt');
+  if (sel2) sel2.innerHTML = '<option value="">— Choisir —</option>' +
+    lmsFormations.map(f => `<option value="${f.id}">${f.titre}</option>`).join('');
+}
+
+// ── Grille formations LMS ──
+function lmsRenderGrid() {
+  const g = document.getElementById('lmsFormGrid');
+  if (!lmsFormations.length) {
+    g.innerHTML = '<div class="empty" style="grid-column:1/-1"><i class="fas fa-graduation-cap"></i><p>Aucune formation activée. Cliquez sur "+ Nouvelle formation".</p></div>';
+    return;
+  }
+  g.innerHTML = lmsFormations.map(f => {
+    const mods = (f.modules||[]).length;
+    const lecs = (f.modules||[]).reduce((s,m)=>s+(m.lecons||[]).length,0);
+    const img  = f.image||f.img||'';
+    return `<div class="port-admin-card">
+      <div style="position:relative;">
+        ${img
+          ? `<img class="pac-img" src="${img}" alt="${f.titre}" style="height:130px;object-fit:cover;width:100%;">`
+          : `<div style="height:130px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(62,146,204,.3);"><i class="fas fa-graduation-cap"></i></div>`}
+        <div style="position:absolute;top:8px;right:8px;display:flex;gap:5px;">
+          <button class="act-btn del" onclick="lmsSupprimer('${f.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      <div class="pac-body">
+        <div class="pac-cat">${f.categorie||'Formation'}</div>
+        <div class="pac-title">${f.titre}</div>
+        <div style="font-size:12px;color:var(--grey);margin-top:2px;margin-bottom:10px;">${mods} module${mods!==1?'s':''} · ${lecs} leçon${lecs!==1?'s':''}</div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="lmsOpenDetail('${f.id}')">
+          <i class="fas fa-edit"></i> Gérer le contenu
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Détail formation ──
+function lmsOpenAddFormation() {
+  lmsPopulateSelects();
+  openModal('modalLmsFormation');
+}
+
+function lmsActiverFormation() {
+  const fid = document.getElementById('lmsFmtSel').value;
+  if (!fid) { toast('Choisissez une formation', true); return; }
+  if (lmsFormations.find(f=>f.id===fid)) { toast('Déjà activée', true); return; }
+  const all = JSON.parse(localStorage.getItem('mard_formations') || '[]');
+  const f   = all.find(x=>x.id===fid);
+  if (!f) return;
+  lmsFormations.push({ ...f, modules: [] });
+  lmsSaveLocal(); lmsRenderGrid(); lmsUpdateBadges(); lmsPopulateSelects();
+  closeModal('modalLmsFormation');
+  toast('Formation activée dans le LMS !');
+  lmsOpenDetail(fid);
+}
+
+function lmsSupprimer(fid) {
+  if (!confirm('Retirer cette formation du LMS ? Le contenu (modules/leçons) sera perdu.')) return;
+  lmsFormations = lmsFormations.filter(f=>f.id!==fid);
+  const modsMap = JSON.parse(localStorage.getItem('mard_lms_modules')||'{}');
+  delete modsMap[fid];
+  localStorage.setItem('mard_lms_modules', JSON.stringify(modsMap));
+  const active = lmsFormations.map(f=>f.id);
+  localStorage.setItem('mard_lms_active', JSON.stringify(active));
+  lmsRenderGrid(); lmsUpdateBadges(); lmsPopulateSelects();
+  toast('Formation retirée du LMS.');
+}
+
+function lmsOpenDetail(fid) {
+  const f = lmsFormations.find(x=>x.id===fid);
+  if (!f) return;
+  lmsCurFmt = f;
+  document.getElementById('lms-list').style.display = 'none';
+  document.getElementById('lms-detail').style.display = '';
+  document.getElementById('lmsDetTitle').textContent = f.titre;
+  document.getElementById('lmsDetDesc').textContent  = f.description||f.desc||'';
+  lmsRenderModules();
+}
+
+function lmsBackList() {
+  document.getElementById('lms-list').style.display = '';
+  document.getElementById('lms-detail').style.display = 'none';
+  lmsCurFmt = null; lmsCurModId = null;
+}
+
+function lmsRenderModules() {
+  const wrap = document.getElementById('lmsModulesWrap');
+  const mods = lmsCurFmt.modules || [];
+  if (!mods.length) {
+    wrap.innerHTML = '<div class="empty"><i class="fas fa-cubes"></i><p>Aucun module. Ajoutez le premier.</p></div>';
+    return;
+  }
+  wrap.innerHTML = mods.map((m, mi) => `
+    <div style="background:var(--bg1);border:1px solid var(--line);margin-bottom:10px;" id="lmsMC${m.id}">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;" onclick="lmsToggleMod('${m.id}')">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--navy);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--blue);flex-shrink:0;">${mi+1}</div>
+        <div style="font-size:14px;font-weight:700;flex:1;">${m.titre}</div>
+        <span style="font-size:12px;color:var(--grey);margin-right:10px;">${(m.lecons||[]).length} leçon${(m.lecons||[]).length!==1?'s':''}</span>
+        <div style="display:flex;gap:6px;" onclick="event.stopPropagation()">
+          <button class="act-btn del" onclick="lmsDelMod('${m.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+        <i class="fas fa-chevron-down" style="color:var(--grey);font-size:12px;" id="lmsMCico${m.id}"></i>
+      </div>
+      <div id="lmsMCbody${m.id}" style="border-top:1px solid var(--line);">
+        ${(m.lecons||[]).map(l => lmsLecRow(l)).join('')}
+        <div style="display:flex;align-items:center;gap:8px;padding:11px 18px;font-size:12px;color:var(--grey);cursor:pointer;transition:color .2s;border-top:1px dashed rgba(62,146,204,.2);" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--grey)'" onclick="lmsOpenAddLecon('${m.id}')">
+          <i class="fas fa-plus" style="color:var(--blue);"></i> Ajouter une leçon
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function lmsToggleMod(id) {
+  const body = document.getElementById('lmsMCbody'+id);
+  const ico  = document.getElementById('lmsMCico'+id);
+  if (!body) return;
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  if (ico) ico.style.transform = hidden ? '' : 'rotate(-90deg)';
+}
+
+function lmsLecRow(l) {
+  const icoMap = {video:'fa-film',pdf:'fa-file-pdf',word:'fa-file-word',zip:'fa-file-archive',text:'fa-align-left'};
+  const bgMap  = {video:'rgba(62,146,204,.12)',pdf:'rgba(231,76,60,.1)',word:'rgba(43,124,211,.1)',zip:'rgba(243,156,18,.1)',text:'rgba(46,204,113,.08)'};
+  const clrMap = {video:'var(--blue)',pdf:'var(--red)',word:'#2b7cd3',zip:'var(--orange)',text:'var(--green)'};
+  const ico = icoMap[l.type]||'fa-file';
+  return `<div style="display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(62,146,204,.06);transition:background .2s;" onmouseover="this.style.background='rgba(62,146,204,.04)'" onmouseout="this.style.background=''">
+    <div style="width:30px;height:30px;border-radius:6px;background:${bgMap[l.type]||bgMap.text};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">
+      <i class="fas ${ico}" style="color:${clrMap[l.type]||clrMap.text}"></i>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.titre}</div>
+      <div style="font-size:11px;color:var(--grey);margin-top:1px;">${(l.type||'').toUpperCase()}${l.duree?' · '+l.duree:''}</div>
+    </div>
+    <div style="display:flex;gap:5px;align-items:center;">
+      ${l.can_watch ?'<span style="padding:1px 7px;font-size:10px;font-weight:700;background:rgba(62,146,204,.1);color:var(--blue)">Lecture</span>':''}
+      ${l.can_download?'<span style="padding:1px 7px;font-size:10px;font-weight:700;background:rgba(46,204,113,.08);color:var(--green)">DL</span>':''}
+      ${l.is_free     ?'<span style="padding:1px 7px;font-size:10px;font-weight:700;background:rgba(243,156,18,.08);color:var(--orange)">Gratuit</span>':''}
+    </div>
+    <button class="act-btn del" onclick="lmsDelLec('${l.id}')"><i class="fas fa-trash"></i></button>
+  </div>`;
+}
+
+// ── Module CRUD ──
+function lmsOpenAddModule() {
+  if (!lmsCurFmt) return;
+  document.getElementById('lmsModSub').textContent = lmsCurFmt.titre;
+  document.getElementById('lmsModTitre').value = '';
+  document.getElementById('lmsModDesc').value  = '';
+  openModal('modalLmsModule');
+}
+
+function lmsSaveModule() {
+  const titre = document.getElementById('lmsModTitre').value.trim();
+  if (!titre || !lmsCurFmt) { toast('Titre requis', true); return; }
+  if (!lmsCurFmt.modules) lmsCurFmt.modules = [];
+  lmsCurFmt.modules.push({ id: Date.now().toString(), titre, desc: document.getElementById('lmsModDesc').value.trim(), lecons: [] });
+  lmsSaveLocal(); lmsRenderModules();
+  closeModal('modalLmsModule');
+  toast('Module ajouté !');
+}
+
+function lmsDelMod(modId) {
+  if (!confirm('Supprimer ce module et ses leçons ?')) return;
+  lmsCurFmt.modules = (lmsCurFmt.modules||[]).filter(m=>m.id!==modId);
+  lmsSaveLocal(); lmsRenderModules();
+  toast('Module supprimé.');
+}
+
+// ── Leçon CRUD ──
+function lmsOpenAddLecon(modId) {
+  lmsCurModId = modId;
+  const m = (lmsCurFmt?.modules||[]).find(x=>x.id===modId);
+  document.getElementById('lmsLecSub').textContent = lmsCurFmt.titre + (m?' → '+m.titre:'');
+  ['lmsLecTitre','lmsLecDuree','lmsLecDesc','lmsLecUrl','lmsLecContenu'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lmsLecType').value = 'video';
+  document.getElementById('lmsLecWatch').checked = true;
+  document.getElementById('lmsLecDl').checked    = false;
+  document.getElementById('lmsLecFree').checked  = false;
+  document.getElementById('lmsLecFileInfo').textContent = '';
+  lmsUpFile = null;
+  document.getElementById('lmsLecDrop').innerHTML = `
+    <i class="fas fa-cloud-upload-alt"></i>
+    <p>Cliquer ou glisser-déposer</p>
+    <span>MP4, PDF, DOC, DOCX, ZIP — max 2 Go</span>
+    <input type="file" id="lmsLecFile" onchange="lmsHandleUpload(this)">`;
+  lmsSwitchType();
+  openModal('modalLmsLecon');
+}
+
+function lmsSwitchType() {
+  const t = document.getElementById('lmsLecType').value;
+  document.getElementById('lmsLecFileZone').style.display = t==='text' ? 'none' : '';
+  document.getElementById('lmsLecTextZone').style.display = t==='text' ? '' : 'none';
+}
+
+function lmsHandleUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  lmsUpFile = file;
+  const size = file.size>1048576?(file.size/1048576).toFixed(1)+' Mo':(file.size/1024).toFixed(0)+' Ko';
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const tm   = {mp4:'video',mov:'video',avi:'video',webm:'video',mkv:'video',pdf:'pdf',zip:'zip',rar:'zip','7z':'zip',doc:'word',docx:'word'};
+  document.getElementById('lmsLecType').value = tm[ext]||'zip';
+  lmsSwitchType();
+  document.getElementById('lmsLecDrop').innerHTML = `
+    <i class="fas fa-check-circle" style="color:var(--green)"></i>
+    <p style="color:var(--green);font-weight:600">${file.name}</p><span>${size}</span>
+    <input type="file" id="lmsLecFile" onchange="lmsHandleUpload(this)" style="display:none">`;
+  document.getElementById('lmsLecFileInfo').textContent = file.name+' — '+size;
+  if (!document.getElementById('lmsLecTitre').value)
+    document.getElementById('lmsLecTitre').value = file.name.replace(/\.[^.]+$/,'').replace(/_/g,' ');
+}
+
+async function lmsSaveLecon() {
+  const titre = document.getElementById('lmsLecTitre').value.trim();
+  const type  = document.getElementById('lmsLecType').value;
+  if (!titre || !lmsCurFmt || !lmsCurModId) { toast('Titre requis', true); return; }
+
+  const btn = document.getElementById('btnLmsLec');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+  let url = document.getElementById('lmsLecUrl').value.trim();
+
+  // Upload fichier si sélectionné
+  if (lmsUpFile && !url) {
+    if (!supabase_client) {
+      toast('Supabase requis pour uploader', true);
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Ajouter';
+      return;
+    }
+    document.getElementById('lmsLecProg').style.display = 'block';
+    const fill = document.getElementById('lmsLecProgFill');
+    let p=0; const iv=setInterval(()=>{p=Math.min(p+Math.random()*10,85);fill.style.width=p+'%';},300);
+    const path = `${Date.now()}_${lmsUpFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const { data, error } = await supabase_client.storage.from('lms-content').upload(path, lmsUpFile, {upsert:false});
+    clearInterval(iv);
+    if (error) {
+      document.getElementById('lmsLecProg').style.display='none';
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Ajouter';
+      toast(error.message.includes('Bucket not found')
+        ? 'Créez le bucket "lms-content" dans Supabase → Storage'
+        : 'Erreur upload : '+error.message, true);
+      return;
+    }
+    fill.style.width='100%';
+    const { data:pub } = supabase_client.storage.from('lms-content').getPublicUrl(data.path);
+    url = pub.publicUrl;
+    setTimeout(()=>{document.getElementById('lmsLecProg').style.display='none';fill.style.width='0%';},600);
+  }
+
+  const lec = {
+    id:           Date.now().toString(),
+    titre, type,
+    url:          url||null,
+    contenu:      document.getElementById('lmsLecContenu').value.trim()||null,
+    duree:        document.getElementById('lmsLecDuree').value.trim()||null,
+    description:  document.getElementById('lmsLecDesc').value.trim()||null,
+    can_watch:    document.getElementById('lmsLecWatch').checked,
+    can_download: document.getElementById('lmsLecDl').checked,
+    is_free:      document.getElementById('lmsLecFree').checked,
+  };
+
+  const mod = (lmsCurFmt.modules||[]).find(m=>m.id===lmsCurModId);
+  if (!mod) { toast('Module introuvable', true); return; }
+  if (!mod.lecons) mod.lecons = [];
+  mod.lecons.push(lec);
+
+  lmsSaveLocal(); lmsRenderModules();
+  closeModal('modalLmsLecon');
+  lmsUpFile = null;
+  btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Ajouter';
+  toast('Leçon ajoutée !');
+}
+
+function lmsDelLec(lecId) {
+  if (!confirm('Supprimer cette leçon ?')) return;
+  (lmsCurFmt.modules||[]).forEach(m=>{m.lecons=(m.lecons||[]).filter(l=>l.id!==lecId);});
+  lmsSaveLocal(); lmsRenderModules();
+  toast('Leçon supprimée.');
+}
+
+// ── Accès étudiants ──
+async function lmsCreerAcces() {
+  const nom = document.getElementById('laName').value.trim();
+  const eml = document.getElementById('laEmail').value.trim();
+  const tel = document.getElementById('laTel').value.trim();
+  const fid = document.getElementById('laFmt').value;
+  if (!nom || !fid) { toast('Nom et formation requis', true); return; }
+  const f   = lmsFormations.find(x=>x.id===fid);
+  const exp = parseInt(document.getElementById('laExp').value);
+  const dl  = parseInt(document.getElementById('laDl').value);
+  const token = 'MRD-'+Math.random().toString(36).substring(2,5).toUpperCase()+'-'+Math.random().toString(36).substring(2,5).toUpperCase();
+  const rec = {
+    id: Date.now().toString(), token,
+    client_nom:nom, client_email:eml, client_tel:tel,
+    formation_id:fid, formation_nom:f?.titre||'—',
+    expiry_date: exp>0 ? new Date(Date.now()+exp*86400000).toISOString() : null,
+    max_downloads:dl, nb_downloads:0, progression:{},
+    statut:'active', created_at:new Date().toISOString(),
+  };
+  if (supabase_client) await supabase_client.from('lms_acces').insert([rec]);
+  lmsAccesListe.unshift(rec);
+  lmsSaveLocal(); lmsUpdateBadges(); lmsRenderAccesTable();
+  closeModal('modalLmsAcces');
+
+  lmsLastToken = { token, nom, eml, tel, fNom:f?.titre||'' };
+  const base   = location.href.split('admin.html')[0] + 'bibliotheque.html';
+  document.getElementById('lmsTokenCode').textContent = token;
+  document.getElementById('lmsTokenLink').textContent = `${base}?token=${token}`;
+  openModal('modalLmsToken');
+  toast('Accès créé !');
+}
+
+function lmsCopyToken() {
+  const base = location.href.split('admin.html')[0]+'bibliotheque.html';
+  navigator.clipboard.writeText(`${base}?token=${lmsLastToken.token}`).then(()=>toast('Lien copié !'));
+}
+function lmsWaToken() {
+  if (!lmsLastToken) return;
+  const base = location.href.split('admin.html')[0]+'bibliotheque.html';
+  const lien = `${base}?token=${lmsLastToken.token}`;
+  const msg  = encodeURIComponent(`Bonjour ${lmsLastToken.nom} 👋\n\nVotre accès à la formation "${lmsLastToken.fNom}" est prêt !\n\n🔗 ${lien}\n🔑 Code : ${lmsLastToken.token}\n\nMARDIGITAL AGENCE`);
+  const num  = (lmsLastToken.tel||'').replace(/\D/g,'');
+  window.open(`https://wa.me/${num}?text=${msg}`,'_blank');
+}
+function lmsEmailToken() {
+  if (!lmsLastToken) return;
+  const base = location.href.split('admin.html')[0]+'bibliotheque.html';
+  const lien = `${base}?token=${lmsLastToken.token}`;
+  const s = encodeURIComponent(`Accès formation — ${lmsLastToken.fNom}`);
+  const b = encodeURIComponent(`Bonjour ${lmsLastToken.nom},\n\nVotre accès est prêt :\n\nLien : ${lien}\nCode : ${lmsLastToken.token}\n\nMARDIGITAL AGENCE`);
+  window.open(`mailto:${lmsLastToken.eml}?subject=${s}&body=${b}`,'_blank');
+}
+
+function lmsRenderAccesTable() {
+  const tb = document.getElementById('lmsAccesTable');
+  if (!lmsAccesListe.length) {
+    tb.innerHTML='<tr><td colspan="7"><div class="empty"><i class="fas fa-key"></i><p>Aucun accès.</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = lmsAccesListe.map(a => {
+    const exp     = a.expiry_date ? new Date(a.expiry_date) : null;
+    const expired = exp && exp < new Date();
+    const s = a.statut==='revoked' ? 'revoked' : expired ? 'expired' : 'active';
+    const sl = {active:'Actif',expired:'Expiré',revoked:'Révoqué'}[s];
+    const sc = {active:'badge-active',expired:'td-badge',revoked:'td-badge'}[s];
+    const f  = lmsFormations.find(x=>x.id===a.formation_id);
+    const total = f?(f.modules||[]).reduce((ss,m)=>ss+(m.lecons||[]).length,0):0;
+    const done  = Object.keys(a.progression||{}).length;
+    const pct   = total>0?Math.round(done/total*100):0;
+    return `<tr>
+      <td><strong>${a.client_nom}</strong><br><span style="font-size:11px;color:var(--grey)">${a.client_email||''}</span></td>
+      <td style="color:var(--blue);font-size:12px">${a.formation_nom}</td>
+      <td><span style="font-size:12px;background:var(--bg3);padding:2px 8px;letter-spacing:1px;font-family:monospace">${a.token}</span></td>
+      <td style="font-size:12px;color:var(--grey)">${exp?exp.toLocaleDateString('fr'):'Permanent'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:70px;height:4px;background:var(--bg3);border-radius:2px"><div style="height:100%;width:${pct}%;background:var(--blue);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--grey)">${pct}%</span>
+        </div>
+      </td>
+      <td><span class="td-badge ${sc}">${sl}</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button class="act-btn" onclick="lmsCpAcces('${a.token}')"><i class="fas fa-copy"></i></button>
+        <button class="act-btn" onclick="lmsWaAcces('${a.id}')"><i class="fab fa-whatsapp"></i></button>
+        ${s==='active'?`<button class="act-btn del" onclick="lmsRevoquer('${a.id}')"><i class="fas fa-ban"></i></button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function lmsCpAcces(token) {
+  const base = location.href.split('admin.html')[0]+'bibliotheque.html';
+  navigator.clipboard.writeText(`${base}?token=${token}`).then(()=>toast('Lien copié !'));
+}
+function lmsWaAcces(id) {
+  const a = lmsAccesListe.find(x=>x.id===id); if(!a) return;
+  lmsLastToken = {token:a.token,nom:a.client_nom,eml:a.client_email,tel:a.client_tel,fNom:a.formation_nom};
+  lmsWaToken();
+}
+async function lmsRevoquer(id) {
+  if (!confirm('Révoquer cet accès ?')) return;
+  const a = lmsAccesListe.find(x=>x.id===id);
+  if (a) { a.statut='revoked'; if(supabase_client) await supabase_client.from('lms_acces').update({statut:'revoked'}).eq('id',id); }
+  lmsSaveLocal(); lmsRenderAccesTable(); lmsUpdateBadges();
+  toast('Accès révoqué.');
+}
+
+let toastTimer;
 
 function toast(msg, err=false) {
   const el = document.getElementById('toast');
