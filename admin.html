@@ -341,24 +341,96 @@ tbody tr:hover td { background:rgba(62,146,204,.04); }
 .empty p { font-size:14px; }
 
 /* ── responsive ── */
-@media(max-width:900px){
-  .sidebar { width:60px; }
-  .sb-item span, .sb-section, .sb-logo span, .sb-user-info, .sb-badge, .btn-logout { display:none; }
-  .sb-logo { padding:16px; }
-  .sb-item { padding:14px; justify-content:center; }
-  .sb-item i { width:auto; margin:0; }
-  .sb-bottom { padding:10px; }
-  .sb-avatar { margin:0 auto; }
-  .main { margin-left:60px; padding:24px 20px; }
-  .stat-row { grid-template-columns:1fr 1fr; }
-  .config-grid { grid-template-columns:1fr; }
-  .port-admin-grid { grid-template-columns:1fr 1fr; }
+/* ═══ RESPONSIVE ADMIN ═══ */
+@media(max-width:1024px){
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .port-admin-grid{grid-template-columns:1fr 1fr;}
+  .formations-grid{grid-template-columns:1fr 1fr!important;}
 }
+@media(max-width:900px){
+  /* Sidebar icônes seulement */
+  .sidebar{width:60px!important;}
+  .sb-item span,.sb-section,.sb-logo-text,.sb-user-info,.sb-badge,.btn-logout{display:none!important;}
+  .sb-logo{padding:14px!important;}
+  .sb-logo img{margin:0 auto;}
+  .sb-item{padding:14px!important;justify-content:center!important;}
+  .sb-item i{width:auto!important;margin:0!important;}
+  .sb-bottom{padding:10px!important;}
+  .main-content,.main{margin-left:60px!important;padding:20px 16px;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .config-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  /* Sidebar hors écran */
+  .sidebar{
+    position:fixed!important;left:-260px!important;width:260px!important;
+    transition:left .3s cubic-bezier(.4,0,.2,1);z-index:200;
+    box-shadow:4px 0 24px rgba(0,0,0,.4);
+  }
+  .sidebar.open{left:0!important;}
+  .sb-item span,.sb-section,.sb-logo-text,.sb-badge,.btn-logout{display:flex!important;}
+  .sb-logo-text{display:block!important;}
+  .sb-item{padding:10px 18px!important;justify-content:flex-start!important;}
+  .sb-overlay-admin{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;
+  }
+  .sb-overlay-admin.on{display:block;}
+  .main-content,.main{margin-left:0!important;padding:0;}
+  /* Header topbar mobile */
+  .mobile-topbar{
+    display:flex!important;align-items:center;gap:12px;padding:12px 16px;
+    background:var(--bg1);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:100;
+  }
+  .burger-admin{
+    width:38px;height:38px;background:var(--bg2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--grey2);cursor:pointer;font-size:16px;flex-shrink:0;
+  }
+  /* Pages */
+  .page,.page-inner{padding:14px 12px!important;}
+  .page-header,.hdr-wrap{flex-direction:column;align-items:stretch;gap:10px;}
+  .hdr-actions{display:flex;flex-wrap:wrap;gap:8px;}
+  /* Grilles */
+  .formations-grid,.portfolio-grid,.stats-grid{grid-template-columns:1fr!important;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .f-row-2,.cfg-grid,.config-grid{grid-template-columns:1fr!important;}
+  /* Tables */
+  .table-scroll,table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
+  /* Modals */
+  .modal-ov{padding:0;align-items:flex-end;}
+  .modal-box{
+    width:100%!important;max-width:100%!important;
+    max-height:92vh;overflow-y:auto;
+    padding:24px 16px!important;
+    border-radius:0;margin:0;
+  }
+  /* Login */
+  .login-box{padding:32px 20px;margin:16px;width:auto;}
+  .login-logo{height:52px!important;}
+  /* LMS pages dans admin */
+  .pg-header{flex-direction:column;align-items:stretch;gap:10px;}
+}
+@media(max-width:480px){
+  .stat-row,.stats-grid{grid-template-columns:1fr!important;}
+  .portfolio-grid{grid-template-columns:1fr!important;}
+  .mobile-topbar{padding:10px 12px;}
+  .login-box{padding:28px 16px;}
+  .modal-box{padding:20px 14px!important;}
+}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════ LOGIN ══════════ -->
+<!-- Overlay sidebar admin mobile -->
+<div class="sb-overlay-admin" id="sbOverlayAdmin" onclick="closeAdminSidebar()"></div>
+<!-- Topbar mobile -->
+<div class="mobile-topbar" style="display:none" id="adminTopbar">
+  <div class="burger-admin" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></div>
+  <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--blue)">MARDIGITAL ADMIN</span>
+</div>
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo-wrap">
@@ -2545,6 +2617,26 @@ async function lmsRevoquer(id) {
 }
 
 let toastTimer;
+
+// ── Sidebar mobile admin ──
+function toggleAdminSidebar() {
+  document.querySelector('.sidebar')?.classList.toggle('open');
+  document.getElementById('sbOverlayAdmin')?.classList.toggle('on');
+}
+function closeAdminSidebar() {
+  document.querySelector('.sidebar')?.classList.remove('open');
+  document.getElementById('sbOverlayAdmin')?.classList.remove('on');
+}
+(function checkAdminMobile() {
+  const isMobile = window.innerWidth <= 768;
+  const tb = document.getElementById('adminTopbar');
+  if (tb) tb.style.display = isMobile ? 'flex' : 'none';
+  window.addEventListener('resize', function() {
+    const m = window.innerWidth <= 768;
+    if (tb) tb.style.display = m ? 'flex' : 'none';
+    if (!m) closeAdminSidebar();
+  });
+})();
 
 function toast(msg, err=false) {
   const el = document.getElementById('toast');
