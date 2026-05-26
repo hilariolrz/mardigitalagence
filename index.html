@@ -936,92 +936,129 @@ footer { background:var(--bg-1); border-top:1px solid var(--blue-line); padding:
    RESPONSIVE — mardigital.html
 ═══════════════════════════════ */
 /* ═══ RESPONSIVE SITE ═══ */
-@media(max-width:1200px){
-  #nav,#hero,#about,#services,#formations,#why,#portfolio,#contact,footer{padding-left:36px;padding-right:36px;}
+
+/* ── 1280px : réduire paddings latéraux ── */
+@media(max-width:1280px){
+  #nav{padding:0 40px;}
+  #hero,#about,#services,#formations,#why,#portfolio,#contact,footer{padding-left:40px;padding-right:40px;}
 }
+
+/* ── 1024px : tablettes paysage ── */
 @media(max-width:1024px){
-  .about-body{grid-template-columns:1fr;}
-  .about-photo-card{position:static;margin:0 auto 40px;order:-1;}
-  .why-grid{grid-template-columns:1fr 1fr;}
-  .ft-grid{grid-template-columns:1fr 1fr;}
-  .port-mosaic{grid-template-columns:1fr 1fr!important;grid-template-rows:auto!important;}
-  .pm{height:200px!important;grid-column:auto!important;grid-row:auto!important;}
-  .hero-stats-row{flex-wrap:wrap;}
-  .h-stat{flex:1;min-width:140px;}
+  #nav{padding:0 28px;}
+  #hero,#about,#services,#formations,#why,#portfolio,#contact,footer{padding-left:28px;padding-right:28px;}
+  .about-body{grid-template-columns:1fr;gap:40px;}
+  .about-photo-card{position:static;order:-1;margin:0 auto 8px;}
+  .about-header{flex-direction:column;gap:20px;margin-bottom:40px;}
+  .about-header h2{font-size:clamp(36px,6vw,60px);}
   .svc-grid{grid-template-columns:1fr 1fr;}
   .form-grid{grid-template-columns:1fr 1fr;}
-  .contact-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:1fr 1fr;}
+  .ft-grid{grid-template-columns:1fr 1fr;}
+  .contact-grid{grid-template-columns:1fr;gap:24px;}
+  .port-mosaic{grid-template-columns:1fr 1fr!important;grid-template-rows:auto!important;}
+  .pm{height:220px!important;grid-column:auto!important;grid-row:auto!important;}
+  .hero-stats-row{flex-wrap:wrap;}
+  .h-stat{flex:1;min-width:130px;}
 }
+
+/* ── 768px : tablettes portrait / grands mobiles ── */
 @media(max-width:768px){
   /* Nav */
-  #nav{padding:0 18px;}
+  #nav{padding:0 16px;}
+  .nav-wrap{height:60px;}
   .nav-list{
-    position:fixed;top:60px;left:0;right:0;
-    background:rgba(10,14,30,.98);backdrop-filter:blur(20px);
-    flex-direction:column;align-items:center;padding:28px 0 24px;gap:20px;
-    transform:translateY(-110%);transition:transform .35s cubic-bezier(.4,0,.2,1);
-    border-bottom:1px solid var(--blue-line);z-index:99;
+    position:fixed;top:60px;left:0;right:0;bottom:0;
+    background:rgba(9,14,28,.98);backdrop-filter:blur(24px);
+    flex-direction:column;align-items:center;justify-content:center;
+    padding:32px 0;gap:28px;list-style:none;
+    transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    z-index:499;
   }
-  .nav-list.open{transform:translateY(0);}
-  .nav-link{font-size:15px;}
-  .burger{display:block;}
+  .nav-list.open{transform:translateX(0);}
+  .nav-list a{font-size:16px;letter-spacing:2px;}
+  .burger{display:flex;align-items:center;justify-content:center;width:40px;height:40px;}
   /* Sections */
-  #hero{padding:100px 18px 60px;}
-  #about,#services,#formations,#why,#portfolio,#contact,footer{padding:52px 18px;}
-  /* Grilles 1 colonne */
-  .svc-grid,.form-grid,.why-grid{grid-template-columns:1fr;}
-  .about-vals{grid-template-columns:1fr 1fr;}
-  .contact-grid{grid-template-columns:1fr;gap:24px;}
-  .ft-grid{grid-template-columns:1fr 1fr;gap:24px;}
-  .about-header{flex-direction:column;gap:24px;margin-bottom:32px;}
-  /* Portfolio */
-  .port-mosaic{grid-template-columns:1fr!important;grid-template-rows:auto!important;}
-  .pm{height:220px!important;grid-column:auto!important;grid-row:auto!important;}
-  .f-filters{flex-wrap:wrap;gap:8px;}
-  .f-btn{padding:7px 14px;font-size:11px;}
+  #hero{padding:80px 16px 52px;}
+  #about,#services,#formations,#why,#portfolio,#contact{padding:60px 16px;}
+  footer{padding:52px 16px 28px;}
   /* Hero */
-  .hero-title{font-size:clamp(40px,10vw,76px);}
-  .hero-stats-row{display:none;}
+  .hero-title,.hero-title-g{font-size:clamp(42px,11vw,80px);}
+  .hero-title-row{gap:12px;flex-wrap:wrap;white-space:normal;}
+  .hero-tagline{font-size:14px;}
   .hero-btns{flex-direction:column;align-items:stretch;gap:12px;}
   .hero-btns .btn-fill,.hero-btns .btn-ghost{width:100%;justify-content:center;text-align:center;}
+  .hero-stats-row{display:none;}
+  .hero-scroll{display:none;}
   /* About */
-  .about-photo-card{position:static;margin:0 auto 32px;order:-1;}
-  .about-photo-ring,.about-photo-frame{width:220px;height:220px;}
+  .about-body{grid-template-columns:1fr;gap:32px;}
+  .about-photo-card{position:static;order:-1;margin:0 auto;}
+  .about-photo-ring,.about-photo-frame{width:200px;height:200px;}
+  .about-vals{grid-template-columns:1fr 1fr;}
   .about-stats{grid-template-columns:repeat(3,1fr);}
-  /* Réalisations */
+  .about-header{flex-direction:column;gap:16px;margin-bottom:32px;}
+  /* Grilles 1 col */
+  .svc-grid,.form-grid,.why-grid{grid-template-columns:1fr;}
+  .ft-grid{grid-template-columns:1fr 1fr;gap:20px;}
+  .contact-grid{grid-template-columns:1fr;gap:20px;}
+  /* Portfolio */
+  .port-mosaic{grid-template-columns:1fr!important;grid-template-rows:auto!important;}
+  .pm{height:200px!important;grid-column:auto!important;grid-row:auto!important;}
+  .f-filters{flex-wrap:wrap;gap:6px;justify-content:center;}
+  .f-btn{padding:7px 14px;font-size:10px;}
   .port-cta{flex-direction:column;align-items:stretch;gap:10px;}
   .port-cta .btn-fill,.port-cta .btn-ghost{width:100%;justify-content:center;}
-  /* Formation accès lien */
-  .reveal{opacity:1!important;transform:none!important;}
-  /* Contact form */
+  /* Section head */
+  .section-head{margin-bottom:36px;}
+  .display{font-size:clamp(36px,8vw,60px);}
+  /* Contact */
+  .c-info{padding:28px 18px;}
   .c-form{padding:24px 16px!important;}
   /* Footer */
   .ft-grid{grid-template-columns:1fr;}
-  .ft-bottom{flex-direction:column;gap:12px;text-align:center;}
+  .ft-bottom{flex-direction:column;gap:10px;text-align:center;}
   /* Modal */
-  .modal-box{width:calc(100vw - 24px)!important;padding:24px 16px!important;max-height:90vh;overflow-y:auto;}
-  .m-paiement-grid{grid-template-columns:1fr!important;}
-  /* Chips */
-  .hero-pill{font-size:11px;padding:6px 14px;}
+  .modal-ov{padding:0;align-items:flex-end;}
+  .modal-box{
+    width:100%!important;max-width:100%!important;
+    padding:24px 16px!important;
+    max-height:88vh;overflow-y:auto;
+  }
+  /* Animations off */
+  .reveal{opacity:1!important;transform:none!important;}
 }
+
+/* ── 480px : petits mobiles ── */
 @media(max-width:480px){
-  #nav img{height:36px!important;}
-  #hero{padding:88px 14px 48px;}
-  #about,#services,#formations,#why,#portfolio,#contact,footer{padding:40px 14px;}
-  .hero-title{font-size:clamp(34px,12vw,56px);}
+  #nav img{height:34px!important;}
+  #hero{padding:70px 14px 44px;}
+  #about,#services,#formations,#why,#portfolio,#contact{padding:48px 14px;}
+  footer{padding:44px 14px 24px;}
+  .hero-title,.hero-title-g{font-size:clamp(34px,12vw,56px);}
+  .hero-eyebrow{font-size:9px;padding:6px 14px;}
   .about-vals{grid-template-columns:1fr;}
   .about-stats{grid-template-columns:1fr 1fr;}
+  .about-photo-ring,.about-photo-frame{width:170px;height:170px;}
   .svc-grid,.form-grid,.why-grid{grid-template-columns:1fr;}
   .ft-grid{grid-template-columns:1fr;}
-  .ft-bottom{flex-direction:column;gap:10px;text-align:center;}
-  .c-info{padding:24px 16px;}
-  .c-form{padding:20px 14px!important;}
+  .ft-bottom{flex-direction:column;gap:8px;text-align:center;}
+  .c-info{padding:22px 14px;}
   .modal-box{padding:20px 14px!important;}
-  .fc{margin-bottom:0;}
-  .section-head{margin-bottom:32px;}
+  .fc{min-height:auto;}
+  .section-head{margin-bottom:28px;}
+  .display{font-size:clamp(30px,10vw,48px);}
   .chip{font-size:9px;padding:3px 9px;}
-  .about-photo-ring,.about-photo-frame{width:190px;height:190px;}
 }
+
+/* ── 360px : très petits écrans ── */
+@media(max-width:360px){
+  .hero-title,.hero-title-g{font-size:clamp(30px,13vw,48px);}
+  #hero{padding:64px 12px 40px;}
+  #about,#services,#formations,#why,#portfolio,#contact{padding:40px 12px;}
+  footer{padding:36px 12px 20px;}
+  .about-photo-ring,.about-photo-frame{width:150px;height:150px;}
+}
+
 </style>
 </head>
 <body>
