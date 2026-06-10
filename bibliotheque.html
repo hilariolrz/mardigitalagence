@@ -66,17 +66,18 @@ body.light .done-btn{ background:rgba(22,163,74,.08); border-color:rgba(22,163,7
 body.light .done-btn:hover,.done-btn.done{ background:#16a34a; color:#fff; }
 body.light #docViewer{ background:#fff !important; border-color:rgba(10,36,99,.12) !important; }
 
-/* Écran accès */
+/* Écran accès — mode clair */
 body.light #accessScreen,
-body.light #deniedScreen       { background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(62,146,204,.1), transparent), #f4f8ff; }
-body.light .acc-box            { background: #fff; border-color: rgba(10,36,99,.15); }
-body.light .acc-logo-wrap      { background: #0A2463 !important; }
-body.light .acc-box-body h2    { color: #0A2463; }
-body.light .acc-box-body p     { color: #3E5A8A; }
+body.light #deniedScreen       { background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(62,146,204,.12), transparent 70%), #f4f8ff; }
+body.light .acc-box            { background: #fff; border-color: rgba(10,36,99,.15); box-shadow: 0 24px 60px rgba(10,36,99,.12); }
+body.light .acc-logo-wrap      { background: #0A2463 !important; border-bottom-color: rgba(62,146,204,.2); }
+body.light .acc-box h2         { color: #0A2463; }
+body.light .acc-box p          { color: #3E5A8A; }
 body.light .acc-box input      { background: #eef4ff; border-color: rgba(10,36,99,.2); color: #0A2463; }
 body.light .acc-box input::placeholder { color: #6a8ab0; }
 body.light .acc-box input:focus { border-color: #3E92CC; background: #e4eeff; }
 body.light .acc-err            { color: #dc2626; }
+body.light .acc-link           { color: #3E5A8A; }
 
 /* Admin sidebar bibliotheque */
 body.light .sb{ background:#fff; border-right-color:rgba(10,36,99,.12); }
@@ -298,73 +299,144 @@ tbody tr:hover td{background:rgba(62,146,204,.03)}
 .done-btn{padding:11px 22px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:var(--green);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .done-btn:hover,.done-btn.done{background:var(--green);color:#fff;border-color:var(--green)}
 
-/* ═══ ÉCRANS ACCÈS / REFUS ═══ */
+/* ═══ ÉCRANS — cachés par défaut ═══ */
+#adminApp,
+#studentApp { display: none; }
+
 #accessScreen,
 #deniedScreen {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   display: none;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px;
+  overflow-y: auto;
   background:
-    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(62,146,204,.08), transparent),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(62,146,204,.09), transparent 70%),
     var(--bg);
+  z-index: 1000;
 }
+
 .acc-box {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   background: var(--bg1);
   border: 1px solid var(--line);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
 }
+
+/* Zone logo — toujours navy, jamais affectée par le mode clair */
 .acc-logo-wrap {
   background: #0A2463;
-  padding: 22px 32px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid rgba(62,146,204,.25);
 }
 .acc-logo-wrap img {
-  height: 48px;
+  height: 44px;
+  width: auto;
   object-fit: contain;
   display: block;
-  margin: 0 auto;
 }
+
+/* Corps */
 .acc-box-body {
   padding: 32px 36px;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
-.acc-box h2 { font-size:18px; font-weight:700; margin-bottom:8px; color:var(--white); }
-.acc-box p  { font-size:13px; color:var(--grey); margin-bottom:22px; line-height:1.7; }
+.acc-box h2 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.acc-box p {
+  font-size: 13px;
+  color: var(--grey);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  max-width: 320px;
+}
 .acc-box input {
   width: 100%;
   padding: 14px;
   background: var(--bg3);
   border: 1px solid var(--line);
+  border-radius: 0;
   color: var(--white);
-  font-size: 16px;
+  font-size: 18px;
   font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   outline: none;
   text-align: center;
-  letter-spacing: 4px;
-  margin-bottom: 10px;
-  transition: border-color .2s;
+  letter-spacing: 5px;
+  margin-bottom: 6px;
+  transition: border-color .2s, background .2s;
   text-transform: uppercase;
 }
-.acc-box input:focus { border-color: var(--blue); }
-.acc-box input::placeholder { color: var(--grey); letter-spacing: 2px; font-size: 13px; }
-.acc-err { font-size: 12px; color: var(--red); min-height: 16px; margin-top: 2px; width: 100%; }
+.acc-box input:focus {
+  border-color: var(--blue);
+  background: rgba(62,146,204,.05);
+}
+.acc-box input::placeholder {
+  color: var(--grey);
+  letter-spacing: 3px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.acc-err {
+  font-size: 12px;
+  color: var(--red);
+  min-height: 18px;
+  margin-bottom: 4px;
+  width: 100%;
+  text-align: center;
+}
+.acc-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: background .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.acc-btn:hover { background: var(--blue-lt); }
+.acc-link {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--grey);
+}
+.acc-link a { color: var(--blue); text-decoration: none; }
+.acc-link a:hover { text-decoration: underline; }
 .den-ico {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(231,76,60,.1); border: 2px solid rgba(231,76,60,.3);
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: rgba(231,76,60,.1);
+  border: 2px solid rgba(231,76,60,.3);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px; color: var(--red); margin: 0 auto 20px;
+  font-size: 26px; color: var(--red);
+  margin: 0 auto 18px;
 }
 
 /* ═══════════════════════════════
@@ -582,7 +654,6 @@ loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser
   <header class="s-hdr" style="position:relative">
     <a href="index.html" style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--grey);text-decoration:none;text-transform:uppercase;transition:color .2s;z-index:1" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--grey)'"><i class="fas fa-arrow-left"></i> Accueil</a>
     <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:0">
-      <span style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;color:#f0f4ff;letter-spacing:1px">MARDIGITAL</span>
       <span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:400;color:var(--grey);letter-spacing:1px;margin-left:10px">Formations</span>
     </div>
     <div class="s-user"><i class="fas fa-user-circle"></i><span id="sNom">—</span></div>
@@ -606,15 +677,17 @@ loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser
 <div id="accessScreen">
   <div class="acc-box">
     <div class="acc-logo-wrap">
-      <img src="Fr/LOGO2.png" alt="MARDIGITAL" style="height:48px;object-fit:contain;display:block;margin:0 auto">
+      <img src="Fr/LOGO2.png" alt="MARDIGITAL">
     </div>
     <div class="acc-box-body">
       <h2>Accès formation</h2>
       <p>Entrez votre code d'accès personnel pour accéder à votre formation.</p>
-      <input type="text" id="tokenFld" placeholder="MRD-XXXX-XXXX" maxlength="16" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'')">
+      <input type="text" id="tokenFld" placeholder="MRD-XXXX-XXXX" maxlength="16"
+        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'')"
+        onkeydown="if(event.key==='Enter')submitToken()">
       <div class="acc-err" id="accErr"></div>
-      <button class="btn btn-blue" style="width:100%;justify-content:center;margin-top:10px;padding:14px" onclick="submitToken()"><i class="fas fa-key"></i> Accéder</button>
-      <div style="margin-top:20px;font-size:12px;color:var(--grey)">Pas de code ? <a href="index.html#formations" style="color:var(--blue)">Acheter une formation →</a></div>
+      <button class="acc-btn" onclick="submitToken()"><i class="fas fa-key"></i> Accéder</button>
+      <div class="acc-link">Pas de code ? <a href="index.html#formations">Acheter une formation →</a></div>
     </div>
   </div>
 </div>
@@ -623,13 +696,13 @@ loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser
 <div id="deniedScreen">
   <div class="acc-box">
     <div class="acc-logo-wrap">
-      <img src="Fr/LOGO2.png" alt="MARDIGITAL" style="height:48px;object-fit:contain;display:block;margin:0 auto">
+      <img src="Fr/LOGO2.png" alt="MARDIGITAL">
     </div>
     <div class="acc-box-body">
       <div class="den-ico"><i class="fas fa-ban"></i></div>
       <h2 id="denTitle">Accès refusé</h2>
-      <p id="denMsg" style="color:var(--grey);font-size:13px;margin-top:4px;line-height:1.7"></p>
-      <a href="index.html" class="btn btn-ghost" style="margin-top:16px;width:100%;justify-content:center"><i class="fas fa-arrow-left"></i> Retour au site</a>
+      <p id="denMsg"></p>
+      <a href="index.html" class="acc-btn" style="text-decoration:none"><i class="fas fa-arrow-left"></i> Retour au site</a>
     </div>
   </div>
 </div>
@@ -851,11 +924,12 @@ let toastTimer;
 })();
 
 (function() {
+  // Tout est caché par CSS — on affiche uniquement le bon écran
   if (MODE === 'admin') {
-    document.getElementById('adminApp').style.display = 'flex';
+    document.getElementById('adminApp').style.cssText = 'display:flex;flex-direction:row;min-height:100vh;';
     initAdmin();
   } else if (TOKEN) {
-    document.getElementById('studentApp').style.display = 'flex';
+    document.getElementById('studentApp').style.cssText = 'display:flex;flex-direction:column;min-height:100vh;';
     initStudent(TOKEN);
   } else {
     document.getElementById('accessScreen').style.display = 'flex';
@@ -1622,16 +1696,18 @@ function updateSProgress() {
 function denied(t,m){document.getElementById('denTitle').textContent=t;document.getElementById('denMsg').textContent=m;document.getElementById('deniedScreen').style.display='flex';}
 
 async function submitToken() {
-  const token=document.getElementById('tokenFld').value.trim();
+  const token = document.getElementById('tokenFld').value.trim();
   if (!token) return;
-  document.getElementById('accErr').textContent='';
-  document.getElementById('accessScreen').style.display='none';
-  document.getElementById('studentApp').style.display='flex';
+  document.getElementById('accErr').textContent = '';
+  // Montrer l'app étudiant
+  document.getElementById('accessScreen').style.display = 'none';
+  document.getElementById('studentApp').style.cssText = 'display:flex;flex-direction:column;min-height:100vh;';
   await initStudent(token);
+  // Si initStudent échoue (token invalide), revenir à l'écran d'accès
   if (!sAcces) {
-    document.getElementById('studentApp').style.display='none';
-    document.getElementById('accessScreen').style.display='flex';
-    document.getElementById('accErr').textContent='Code invalide. Vérifiez et réessayez.';
+    document.getElementById('studentApp').style.display = 'none';
+    document.getElementById('accessScreen').style.display = 'flex';
+    document.getElementById('accErr').textContent = 'Code invalide. Vérifiez et réessayez.';
   }
 }
 
